@@ -131,7 +131,12 @@ async function populateFakeData() {
     }
 }
 
-await getFirebaseData();
-setChartData();
+
+async function getData() {
+    await getFirebaseData();
+    setChartData();
+}
+
+getData();
 
 // populateFakeData();
