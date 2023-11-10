@@ -1,0 +1,7 @@
+{
+  "dependencies": {},
+  "devDependencies": {
+    "sass": "^1.69.5",
+    "svelte-adapter-bun": "^0.5.1"
+  }
+}

@@ -7,4 +7,17 @@
 
 ## 📈 Dashboard
 
+[plant.etinaude.dev](https://plant.etinaude.dev)
+
+### Install
+
+#### Prerequisite
+
+- [BunJs](https://bunjs.dev)
+
+
+<!-- TODO -->
+
+OLD:
+
 [Thing Speak](https://thingspeak.com/channels/2333205/private_show)
