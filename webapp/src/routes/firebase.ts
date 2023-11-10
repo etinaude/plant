@@ -114,7 +114,7 @@ async function setChartData() {
 
 
 async function populateFakeData() {
-    for (let i = 0; i < 500; i++) {
+    for (let i = 0; i < 100; i++) {
         const tempData: PlantData = {
             co2: Math.random() * 1000,
             light: Math.random() * 100,
@@ -132,11 +132,10 @@ async function populateFakeData() {
 }
 
 
-async function getData() {
+export async function getData() {
     await getFirebaseData();
     setChartData();
 }
 
-getData();
 
 // populateFakeData();
