@@ -30,8 +30,8 @@ declare module '$env/static/private' {
 	export const USER: string;
 	export const npm_config_user_agent: string;
 	export const XDG_SESSION_TYPE: string;
-	export const GIT_ASKPASS: string;
 	export const BUN_INSTALL: string;
+	export const GIT_ASKPASS: string;
 	export const npm_node_execpath: string;
 	export const SHLVL: string;
 	export const npm_config_noproxy: string;
@@ -103,7 +103,6 @@ declare module '$env/static/private' {
 	export const npm_lifecycle_event: string;
 	export const QT_ACCESSIBILITY: string;
 	export const GDMSESSION: string;
-	export const NO_AT_BRIDGE: string;
 	export const GJS_DEBUG_OUTPUT: string;
 	export const QT_IM_MODULE: string;
 	export const VSCODE_GIT_ASKPASS_EXTRA_ARGS: string;
@@ -152,8 +151,8 @@ declare module '$env/dynamic/private' {
 		USER: string;
 		npm_config_user_agent: string;
 		XDG_SESSION_TYPE: string;
-		GIT_ASKPASS: string;
 		BUN_INSTALL: string;
+		GIT_ASKPASS: string;
 		npm_node_execpath: string;
 		SHLVL: string;
 		npm_config_noproxy: string;
@@ -225,7 +224,6 @@ declare module '$env/dynamic/private' {
 		npm_lifecycle_event: string;
 		QT_ACCESSIBILITY: string;
 		GDMSESSION: string;
-		NO_AT_BRIDGE: string;
 		GJS_DEBUG_OUTPUT: string;
 		QT_IM_MODULE: string;
 		VSCODE_GIT_ASKPASS_EXTRA_ARGS: string;
