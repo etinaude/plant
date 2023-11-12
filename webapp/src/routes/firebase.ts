@@ -1,69 +1,8 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, set } from "firebase/database";
 import * as keys from "./../keys.json"
-
-
-export type PlantData = {
-    co2: number;
-    light: number;
-    moisture1: number;
-    moisture2: number;
-    moisture3: number;
-    humidity: number;
-    temperature: number;
-    vocs: number;
-    timeStamp: number;
-};
-
-export class DataSet {
-    field: string;
-    borderColor: string;
-    pointBorderColor: string;
-    data: number[];
-    labels: string[];
-
-    lineTension: 0.5;
-    pointBorderWidth: 5;
-    pointRadius: 1;
-    pointHitRadius: 5;
-
-    constructor(plantData: PlantData[], field: keyof PlantData, colour: string) {
-        this.field = field;
-        this.borderColor = colour;
-        this.pointBorderColor = colour;
-
-        this.lineTension = 0.5;
-        this.pointBorderWidth = 5;
-        this.pointRadius = 1;
-        this.pointHitRadius = 5;
-
-        this.data = [];
-        this.labels = [];
-
-        plantData.forEach((item => {
-            this.data.push(item[field]);
-            this.labels.push(new Date(item.timeStamp).toLocaleTimeString())
-
-        }))
-    }
-}
-
-export class ChartData {
-    title: string;
-    labels: string[];
-    datasets: DataSet[];
-
-    constructor(data: DataSet, title: string) {
-        this.title = title;
-        this.datasets = [data];
-
-        this.labels = data.labels;
-    }
-
-    appendDataSet(data: DataSet) {
-        this.datasets.push(data);
-    }
-}
+import type { PlantData, DataFilter } from "./types";
+import { DataSet, ChartData, } from "./types";
 
 const firebaseConfig = {
     apiKey: keys.apiKey,
@@ -78,7 +17,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 export const db = getDatabase(app);
-
 
 export async function populateFakeData() {
     for (let i = 0; i < 10; i++) {
@@ -97,7 +35,6 @@ export async function populateFakeData() {
         });
     }
 }
-
 
 export function generateChartData(data: PlantData[]) {
     const lightDataset = new DataSet(data, 'light', '#ede324');
@@ -122,4 +59,39 @@ export function generateChartData(data: PlantData[]) {
     chartList[1].appendDataSet(moisture3Dataset);
 
     return chartList;
+}
+
+
+export function filterData(rawData: PlantData[], filter: DataFilter): PlantData[] {
+
+    console.log(filter);
+    console.log(rawData);
+
+    const data: PlantData[] = []
+    const startDate = filter.startDate;
+    const endDate = filter.endDate;
+    const dataPointCount = filter.dataPointCount;
+
+    // Filter data by date
+    rawData.forEach((item) => {
+        if (item.timeStamp < new Date(startDate).getTime()) return;
+        if (item.timeStamp > new Date(endDate).getTime()) return;
+
+        data.push(item);
+    })
+
+    // TODO: improve this to average data points
+    // if we have too much data, we need to reduce it
+    if (data.length > dataPointCount) {
+        const step = Math.floor(data.length / dataPointCount);
+        const filteredData: PlantData[] = [];
+
+        for (let i = 0; i < data.length; i += step) {
+            filteredData.push(data[i]);
+        }
+
+        return filteredData;
+    }
+
+    return data;
 }

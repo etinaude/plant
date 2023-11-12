@@ -45,3 +45,36 @@ h1{
 		}
 	}
 }
+
+
+.filter-row{
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-bottom: 50px;
+
+	.filter-title{
+		text-align: center;
+		margin-top: 30px;
+		font-size: larger;
+		font-weight: bold;
+	}
+
+	input, button{
+		width: 140px;
+		height: 35px;
+		border-radius: 5px;
+		outline: none;
+		border: 2px solid #777;
+		margin: 0 50px;
+		text-align: center;
+	}
+
+	button{
+		background-color: var(--accent);
+		border: none;
+		cursor: pointer;
+		font-weight: bold;
+	}
+}

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import './styles.scss';
 	import { Line } from 'svelte-chartjs';
-	import { db, generateChartData } from './firebase.ts';
-	import type { ChartData } from './firebase.ts';
+	import { db, generateChartData, filterData } from './firebase.ts';
+	import type { ChartData, DataFilter, PlantData } from './types.ts';
 
 	import {
 		Chart as ChartJS,
@@ -19,7 +19,13 @@
 	import { onMount } from 'svelte';
 
 	let chartList: ChartData[] = [];
-	const firebaseData: any[] = [];
+	let rawData: PlantData[] = [];
+	let filteredData: PlantData[] = [];
+	let filter: DataFilter = {
+		startDate: '2020-01-01',
+		endDate: '2023-12-12',
+		dataPointCount: 10
+	};
 
 	ChartJS.register(Title, Tooltip, LineElement, LinearScale, PointElement, CategoryScale);
 
@@ -34,13 +40,16 @@
 
 	async function getFirebaseData() {
 		onValue(ref(db, 'plant'), (snapshot) => {
-			firebaseData.length = 0;
 			snapshot.forEach((item) => {
-				firebaseData.push(item.val());
+				rawData.push(item.val() as PlantData);
 			});
-
-			chartList = generateChartData(firebaseData);
+			filterAndDisplay();
 		});
+	}
+
+	function filterAndDisplay() {
+		filteredData = filterData(rawData, filter);
+		chartList = generateChartData(filteredData);
 	}
 
 	onMount(async () => {
@@ -52,6 +61,28 @@
 	<title>🌱 Plant 🪴</title>
 	<meta name="description" content="Plant Dashboard" />
 </svelte:head>
+
+<div class="filter-row">
+	<div class="filter">
+		<div class="filter-title">Start Date</div>
+		<input type="date" bind:value={filter.startDate} />
+	</div>
+
+	<div class="filter">
+		<div class="filter-title">End Date</div>
+		<input type="date" bind:value={filter.endDate} />
+	</div>
+
+	<div class="filter">
+		<div class="filter-title">Data points</div>
+		<input type="number" bind:value={filter.dataPointCount} />
+	</div>
+
+	<div class="filter">
+		<div class="filter-title">&nbsp;</div>
+		<button on:click={filterAndDisplay}> GO >> </button>
+	</div>
+</div>
 
 <h1>🌱 Plant Dashboard 🪴</h1>
 
