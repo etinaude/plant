@@ -1,15 +1,8 @@
-<script>
+<script lang="ts">
 	import './styles.scss';
 	import { Line } from 'svelte-chartjs';
-	import {
-		lightData,
-		moistureData,
-		humidityData,
-		temperatureData,
-		co2Data,
-		vocsData,
-		getData
-	} from './firebase.ts';
+	import { db, generateChartData } from './firebase.ts';
+	import type { ChartData } from './firebase.ts';
 
 	import {
 		Chart as ChartJS,
@@ -21,11 +14,15 @@
 		PointElement,
 		CategoryScale
 	} from 'chart.js';
+
+	import { ref, onValue } from 'firebase/database';
 	import { onMount } from 'svelte';
 
-	ChartJS.register(Title, Tooltip, Legend, LineElement, LinearScale, PointElement, CategoryScale);
+	let chartList: ChartData[] = [];
+	const firebaseData: any[] = [];
 
-	let fetched = false;
+	ChartJS.register(Title, Tooltip, LineElement, LinearScale, PointElement, CategoryScale);
+
 	const options = {
 		responsive: true,
 		title: {
@@ -35,9 +32,19 @@
 		datasets: {}
 	};
 
+	async function getFirebaseData() {
+		onValue(ref(db, 'plant'), (snapshot) => {
+			firebaseData.length = 0;
+			snapshot.forEach((item) => {
+				firebaseData.push(item.val());
+			});
+
+			chartList = generateChartData(firebaseData);
+		});
+	}
+
 	onMount(async () => {
-		await getData();
-		fetched = true;
+		await getFirebaseData();
 	});
 </script>
 
@@ -48,35 +55,11 @@
 
 <h1>🌱 Plant Dashboard 🪴</h1>
 
-{#if !fetched}
-	<h2>Loading...</h2>
-{/if}
-
-{#if fetched}
-	<div class="grid">
+<div class="grid">
+	{#each chartList as chart}
 		<div class="grid-item">
-			<h2>{lightData.title}</h2>
-			<Line data={lightData} {options} />
+			<h2>{chart.title}</h2>
+			<Line data={chart} {options} />
 		</div>
-		<div class="grid-item">
-			<h2>{moistureData.title}</h2>
-			<Line data={moistureData} {options} />
-		</div>
-		<div class="grid-item">
-			<h2>{humidityData.title}</h2>
-			<Line data={humidityData} {options} />
-		</div>
-		<div class="grid-item">
-			<h2>{temperatureData.title}</h2>
-			<Line data={temperatureData} {options} />
-		</div>
-		<div class="grid-item">
-			<h2>{vocsData.title}</h2>
-			<Line data={vocsData} {options} />
-		</div>
-		<div class="grid-item">
-			<h2>{co2Data.title}</h2>
-			<Line data={co2Data} {options} />
-		</div>
-	</div>
-{/if}
+	{/each}
+</div>

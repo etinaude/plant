@@ -1,7 +1,6 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { getDatabase, ref, set } from "firebase/database";
 import * as keys from "./../keys.json"
-import { collection, getDocs, addDoc } from "firebase/firestore";
 
 
 export type PlantData = {
@@ -14,31 +13,38 @@ export type PlantData = {
     temperature: number;
     vocs: number;
     timeStamp: number;
-}
+};
 
 export class DataSet {
-    label: string;
+    field: string;
     borderColor: string;
     pointBorderColor: string;
     data: number[];
+    labels: string[];
 
     lineTension: 0.5;
     pointBorderWidth: 5;
     pointRadius: 1;
     pointHitRadius: 5;
 
-    constructor(plantData: PlantData[], field: keyof (PlantData), colour: string) {
-        this.label = field;
+    constructor(plantData: PlantData[], field: keyof PlantData, colour: string) {
+        this.field = field;
         this.borderColor = colour;
         this.pointBorderColor = colour;
-        this.data = plantData.map((item) => {
-            return item[field];
-        })
 
         this.lineTension = 0.5;
         this.pointBorderWidth = 5;
         this.pointRadius = 1;
         this.pointHitRadius = 5;
+
+        this.data = [];
+        this.labels = [];
+
+        plantData.forEach((item => {
+            this.data.push(item[field]);
+            this.labels.push(new Date(item.timeStamp).toLocaleTimeString())
+
+        }))
     }
 }
 
@@ -51,14 +57,11 @@ export class ChartData {
         this.title = title;
         this.datasets = [data];
 
-        this.labels = firebaseData.map((item) => {
-            const date = new Date(item.timeStamp);
-            return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
-        });
+        this.labels = data.labels;
     }
 
     appendDataSet(data: DataSet) {
-        this.datasets.push(data)
+        this.datasets.push(data);
     }
 }
 
@@ -69,53 +72,19 @@ const firebaseConfig = {
     storageBucket: keys.storageBucket,
     messagingSenderId: keys.messagingSenderId,
     appId: keys.appId,
-    measurementId: keys.measurementId
+    measurementId: keys.measurementId,
+    databaseURL: keys.databaseURL
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const firebaseData: PlantData[] = [];
-export let lightData: ChartData;
-export let moistureData: ChartData;
-export let humidityData: ChartData;
-export let co2Data: ChartData;
-export let temperatureData: ChartData;
-export let vocsData: ChartData;
-export let allData: ChartData;
-
-async function getFirebaseData() {
-    const querySnapshot = await getDocs(collection(db, "plant"));
-    querySnapshot.forEach((doc) => {
-        firebaseData.push(doc.data() as PlantData);
-    });
-}
-
-async function setChartData() {
-    const lightDataset = new DataSet(firebaseData, "light", "#ede324");
-    const moisture1Dataset = new DataSet(firebaseData, "moisture1", "#24aaed");
-    const moisture2Dataset = new DataSet(firebaseData, "moisture2", "#2442ed");
-    const moisture3Dataset = new DataSet(firebaseData, "moisture3", "#247bed");
-    const tempDataset = new DataSet(firebaseData, "temperature", "#ed9624");
-    const vocsDataset = new DataSet(firebaseData, "vocs", "#444");
-    const co2Dataset = new DataSet(firebaseData, "co2", "#777");
-    const humidityDataset = new DataSet(firebaseData, "humidity", "#24edbe");
+export const db = getDatabase(app);
 
 
-    lightData = new ChartData(lightDataset, "Light 💡");
-    moistureData = new ChartData(moisture1Dataset, "Moisture 💧");
-    humidityData = new ChartData(humidityDataset, "Humidity 💦");
-    temperatureData = new ChartData(tempDataset, "Temperature 🌡️");
-    vocsData = new ChartData(vocsDataset, "VOCs 🌫️");
-    co2Data = new ChartData(co2Dataset, "CO2 ☁️");
+export async function populateFakeData() {
+    for (let i = 0; i < 10; i++) {
+        const time = Math.round((Math.random() * 100000000000) + 1600000000000)
 
-    moistureData.appendDataSet(moisture2Dataset);
-    moistureData.appendDataSet(moisture3Dataset);
-}
-
-
-async function populateFakeData() {
-    for (let i = 0; i < 100; i++) {
-        const tempData: PlantData = {
+        set(ref(db, 'plant/' + time), {
             co2: Math.random() * 1000,
             light: Math.random() * 100,
             moisture1: Math.random() * 100,
@@ -124,18 +93,33 @@ async function populateFakeData() {
             temperature: Math.random() * 60,
             humidity: Math.random() * 100,
             vocs: Math.random() * 20,
-            timeStamp: (Math.random() * 100000000000) + 1600000000000
-        }
-
-        await addDoc(collection(db, "plant"), tempData);
+            timeStamp: time
+        });
     }
 }
 
 
-export async function getData() {
-    await getFirebaseData();
-    setChartData();
+export function generateChartData(data: PlantData[]) {
+    const lightDataset = new DataSet(data, 'light', '#ede324');
+    const moisture1Dataset = new DataSet(data, 'moisture1', '#24aaed');
+    const moisture2Dataset = new DataSet(data, 'moisture2', '#2442ed');
+    const moisture3Dataset = new DataSet(data, 'moisture3', '#247bed');
+    const tempDataset = new DataSet(data, 'temperature', '#ed9624');
+    const vocsDataset = new DataSet(data, 'vocs', '#444');
+    const co2Dataset = new DataSet(data, 'co2', '#777');
+    const humidityDataset = new DataSet(data, 'humidity', '#24edbe');
+
+    let chartList = [];
+
+    chartList.push(new ChartData(lightDataset, 'Light 💡'));
+    chartList.push(new ChartData(moisture1Dataset, 'Moisture 💧'));
+    chartList.push(new ChartData(humidityDataset, 'Humidity 💦'));
+    chartList.push(new ChartData(tempDataset, 'Temperature 🌡️'));
+    chartList.push(new ChartData(vocsDataset, 'VOCs 🌫️'));
+    chartList.push(new ChartData(co2Dataset, 'CO2 ☁️'));
+
+    chartList[1].appendDataSet(moisture2Dataset);
+    chartList[1].appendDataSet(moisture3Dataset);
+
+    return chartList;
 }
-
-
-// populateFakeData();
