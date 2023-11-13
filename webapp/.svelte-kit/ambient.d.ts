@@ -44,6 +44,7 @@ declare module '$env/static/private' {
 	export const npm_config_local_prefix: string;
 	export const XMODIFIERS: string;
 	export const DESKTOP_SESSION: string;
+	export const NO_AT_BRIDGE: string;
 	export const GTK_MODULES: string;
 	export const PWD: string;
 	export const XDG_SESSION_DESKTOP: string;
@@ -54,7 +55,6 @@ declare module '$env/static/private' {
 	export const XAUTHORITY: string;
 	export const VSCODE_GIT_ASKPASS_NODE: string;
 	export const GJS_DEBUG_TOPICS: string;
-	export const VSCODE_INJECTION: string;
 	export const HOME: string;
 	export const USERNAME: string;
 	export const LANG: string;
@@ -70,11 +70,13 @@ declare module '$env/static/private' {
 	export const NVM_DIR: string;
 	export const VSCODE_GIT_ASKPASS_EXTRA_ARGS: string;
 	export const GNOME_SETUP_DISPLAY: string;
+	export const LESSCLOSE: string;
 	export const XDG_SESSION_CLASS: string;
 	export const TERM: string;
 	export const npm_package_name: string;
 	export const ZSH: string;
 	export const ZDOTDIR: string;
+	export const LESSOPEN: string;
 	export const USER: string;
 	export const VSCODE_GIT_IPC_HANDLE: string;
 	export const DISPLAY: string;
@@ -150,6 +152,7 @@ declare module '$env/dynamic/private' {
 		npm_config_local_prefix: string;
 		XMODIFIERS: string;
 		DESKTOP_SESSION: string;
+		NO_AT_BRIDGE: string;
 		GTK_MODULES: string;
 		PWD: string;
 		XDG_SESSION_DESKTOP: string;
@@ -160,7 +163,6 @@ declare module '$env/dynamic/private' {
 		XAUTHORITY: string;
 		VSCODE_GIT_ASKPASS_NODE: string;
 		GJS_DEBUG_TOPICS: string;
-		VSCODE_INJECTION: string;
 		HOME: string;
 		USERNAME: string;
 		LANG: string;
@@ -176,11 +178,13 @@ declare module '$env/dynamic/private' {
 		NVM_DIR: string;
 		VSCODE_GIT_ASKPASS_EXTRA_ARGS: string;
 		GNOME_SETUP_DISPLAY: string;
+		LESSCLOSE: string;
 		XDG_SESSION_CLASS: string;
 		TERM: string;
 		npm_package_name: string;
 		ZSH: string;
 		ZDOTDIR: string;
+		LESSOPEN: string;
 		USER: string;
 		VSCODE_GIT_IPC_HANDLE: string;
 		DISPLAY: string;

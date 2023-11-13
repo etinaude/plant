@@ -15,7 +15,7 @@
 		CategoryScale
 	} from 'chart.js';
 
-	import { ref, onValue } from 'firebase/database';
+	import { ref, onValue, DataSnapshot, child, get } from 'firebase/database';
 	import { onMount } from 'svelte';
 
 	let chartList: ChartData[] = [];
@@ -26,6 +26,8 @@
 		endDate: '2023-12-12',
 		dataPointCount: 10
 	};
+
+	let lastUpdated = new Date();
 
 	ChartJS.register(Title, Tooltip, LineElement, LinearScale, PointElement, CategoryScale);
 
@@ -39,13 +41,26 @@
 	};
 
 	async function getFirebaseData() {
-		onValue(ref(db, 'plant'), (snapshot) => {
-			snapshot.forEach((item) => {
-				rawData.push(item.val() as PlantData);
-			});
-			filterAndDisplay();
+		onValue(ref(db, 'esp32'), (snapshot) => {
+			if (new Date().getTime() - lastUpdated.getTime() < 5000) return;
+			lastUpdated = new Date();
+
+			processFirebaseData(snapshot);
 		});
 	}
+
+	function processFirebaseData(snapshot: DataSnapshot) {
+		rawData = [];
+		snapshot.forEach((item) => {
+			const temp = item.val() as PlantData;
+			temp.timeStamp = temp.timeStamp * 1000;
+			rawData.push(temp);
+		});
+
+		filterAndDisplay();
+	}
+
+	function getInitalFirebaseData() {}
 
 	function filterAndDisplay() {
 		filteredData = filterData(rawData, filter);
@@ -53,7 +68,9 @@
 	}
 
 	onMount(async () => {
-		await getFirebaseData();
+		get(ref(db, 'esp32')).then((snapshot: DataSnapshot) => {
+			processFirebaseData(snapshot);
+		});
 	});
 </script>
 
