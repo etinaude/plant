@@ -1,36 +1,36 @@
 // ~~~ INPUT PINS ~~~
-#define LDR_1_PIN 21
-#define LDR_2_PIN 22
-#define LDR_3_PIN 23
+#define LDR_1_PIN 37
 
-#define DHT11_PIN 24
+#define DHT11_PIN 39
 
-#define I2C_SDA 33
-#define I2C_SCL 35
+#define I2C_SDA 18
+#define I2C_SCL 33
 
-#define SOIL_1_PIN 25
-#define SOIL_2_PIN 26
-#define SOIL_3_PIN 27
+#define SOIL_1_PIN 35
+#define SOIL_2_PIN 23
+#define SOIL_3_PIN 23
 
 // ~~~ OUTPUT PINS ~~~
-#define PUMP_1_PIN 12
-#define PUMP_2_PIN 13
-#define PUMP_3_PIN 14
+#define PUMP_1_PIN 24
+#define PUMP_2_PIN 24
+#define PUMP_3_PIN 24
 
-#define FAN_PIN 9
-#define LED_PIN 10
-#define STATUS_LED_PIN 11
-
-
+#define FAN_PIN 24
+#define LED_PIN 24
+#define STATUS_LED_PIN 24
 // ~~~ ~~~ ~~~ ~~~
 
 
+DHT dht(DHT11_PIN, DHT11);
+
+
+
 void setupPins() {
+  Wire.begin(I2C_SDA, I2C_SCL);
+
   pinMode(LDR_1_PIN, INPUT);
-  pinMode(LDR_2_PIN, INPUT);
-  pinMode(LDR_3_PIN, INPUT);
   pinMode(DHT11_PIN, INPUT);
-  pinMode(SOIL_1_PIN, INPUT);
+  // pinMode(SOIL_1_PIN, INPUT);
   pinMode(SOIL_2_PIN, INPUT);
   pinMode(SOIL_3_PIN, INPUT);
 
