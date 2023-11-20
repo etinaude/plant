@@ -15,7 +15,7 @@
 		CategoryScale
 	} from 'chart.js';
 
-	import { ref, onValue, DataSnapshot, child, get } from 'firebase/database';
+	import { ref, onValue, DataSnapshot, get } from 'firebase/database';
 	import { onMount } from 'svelte';
 
 	let chartList: ChartData[] = [];
@@ -24,7 +24,7 @@
 	let filter: DataFilter = {
 		startDate: '2020-01-01',
 		endDate: '2023-12-12',
-		dataPointCount: 10
+		dataPointCount: 100
 	};
 
 	let lastUpdated = new Date();
@@ -60,8 +60,6 @@
 		filterAndDisplay();
 	}
 
-	function getInitalFirebaseData() {}
-
 	function filterAndDisplay() {
 		filteredData = filterData(rawData, filter);
 		chartList = generateChartData(filteredData);
@@ -71,6 +69,13 @@
 		get(ref(db, 'esp32')).then((snapshot: DataSnapshot) => {
 			processFirebaseData(snapshot);
 		});
+
+		const today = new Date().toISOString().slice(0, 10);
+		filter.startDate = today;
+
+		const tomorrow = new Date();
+		tomorrow.setDate(tomorrow.getDate() + 1);
+		filter.endDate = tomorrow.toISOString().slice(0, 10);
 	});
 </script>
 

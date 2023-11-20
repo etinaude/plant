@@ -17,10 +17,10 @@ export class DataSet {
 	data: number[];
 	labels: string[];
 
-	lineTension: 0.5;
-	pointBorderWidth: 5;
-	pointRadius: 1;
-	pointHitRadius: 5;
+	lineTension: number;
+	pointBorderWidth: number;
+	pointRadius: number;
+	pointHitRadius: number;
 
 	constructor(plantData: PlantData[], field: keyof PlantData, colour: string) {
 		this.field = field;
@@ -28,8 +28,8 @@ export class DataSet {
 		this.pointBorderColor = colour;
 
 		this.lineTension = 0.5;
-		this.pointBorderWidth = 5;
-		this.pointRadius = 1;
+		this.pointBorderWidth = 6;
+		this.pointRadius = 0;
 		this.pointHitRadius = 5;
 
 		this.data = [];

@@ -62,18 +62,21 @@ export function generateChartData(data: PlantData[]) {
 }
 
 export function filterData(rawData: PlantData[], filter: DataFilter): PlantData[] {
-	const data: PlantData[] = [];
+	let data: PlantData[] = [];
 	const startDate = filter.startDate;
 	const endDate = filter.endDate;
 	const dataPointCount = filter.dataPointCount;
 
 	// Filter data by date
 	rawData.forEach((item) => {
+		if (!item.timeStamp) return;
 		if (item.timeStamp < new Date(startDate).getTime()) return;
 		if (item.timeStamp > new Date(endDate).getTime()) return;
 
 		data.push(item);
 	});
+
+
 
 	// TODO: improve this to average data points
 	// if we have too much data, we need to reduce it
@@ -85,8 +88,14 @@ export function filterData(rawData: PlantData[], filter: DataFilter): PlantData[
 			filteredData.push(data[i]);
 		}
 
-		return filteredData;
+		data = filteredData;
 	}
+
+	data.sort((a, b) => {
+		if (!a.timeStamp || !b.timeStamp) return 0;
+		return a.timeStamp - b.timeStamp;
+	});
+
 
 	return data;
 }
