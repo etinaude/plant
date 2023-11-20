@@ -1,86 +1,71 @@
-#include "CCS811-SOLDERED.h"
-#include "Wire.h"
-#include "DHT.h"
 
-#include <Ewma.h>
 #include "firebase.h"
-#include "parameters.h"
-#include "state.h"
 
+DHT22 dht22(DHT11_PIN);
 CCS_811 ccs811;
-int count = 0;
 int lastSent = millis();
 
-void setup()
-{
+void setup() {
   setupPins();
   ccs811.begin();
-  dht.begin();
 
   Serial.begin(115200);
-  Serial.println("~~~ START ~~~");
+  if (verbose) Serial.println("~~~ START ~~~");
 
   delay(500);
+
   connectWifi();
 }
 
-void loop()
-{
+void loop() {
   readAllData();
-
   setState();
   actuate();
 
-  printData();
-  printState();
+  if (verbose) printData();
+  if (verbose) printState();
 
   delay(readDelay);
-  count++;
+
 
   // send data
-  if (millis() - lastSent < sendDelay)
-    return;
+  if (millis() - lastSent < sendDelay) return;
   lastSent = millis();
-  count = 0;
-
   writeToFirebase();
 }
 
-void readAllData()
-{
+void readAllData() {
   readCCS();
-  // readTempHumData();
+  readTempHumData();
   readMoistureData();
   readLightData();
 }
 
-void readTempHumData()
-{
-  float humidityRaw = dht.readHumidity();
+void readTempHumData() {
+  float humidityRaw = dht22.getHumidity();
   delay(50);
-  float tempRaw = dht.readTemperature();
+  float tempRaw = dht22.getTemperature();
 
   temp.filter(tempRaw);
   humid.filter(humidityRaw);
 }
 
-void readLightData()
-{
+void readLightData() {
   LDRState = !digitalRead(LDR_1_PIN);
 
   lux.filter(LDRState);
 }
 
-void readMoistureData()
-{
+void readMoistureData() {
   float rawMoisture = analogRead(SOIL_1_PIN);
-  moisture.filter(rawMoisture);
+  // convert to %
+  float processed = (7500 - rawMoisture) / 46;
+
+  moisture.filter(processed);
 }
 
-void readCCS()
-{
-  if (!ccs811.dataAvailable())
-  {
+void readCCS() {
+  if (!ccs811.dataAvailable()) {
     return;
   }
   ccs811.readAlgorithmResults();
@@ -91,8 +76,7 @@ void readCCS()
   tvoc.filter(tvocRaw);
 }
 
-void printData()
-{
+void printData() {
   Serial.print("Data:");
   Serial.print("\t count: ");
   Serial.print(count);
@@ -116,8 +100,7 @@ void printData()
   Serial.println(humid.output);
 }
 
-void printState()
-{
+void printState() {
   Serial.print("State");
 
   Serial.print("\t Pumps: ");
@@ -136,16 +119,13 @@ void printState()
   Serial.println(fanState);
 }
 
-void setLights()
-{
+void setLights() {
   digitalWrite(LED_PIN, lightsState);
 }
 
-void setPumps()
-{
+void setPumps() {
 
-  if (pumpsState == true)
-  {
+  if (pumpsState == true) {
     digitalWrite(PUMP_1_PIN, pumpsState);
     digitalWrite(PUMP_2_PIN, pumpsState);
     digitalWrite(PUMP_3_PIN, pumpsState);
@@ -159,30 +139,25 @@ void setPumps()
   digitalWrite(PUMP_3_PIN, pumpsState);
 }
 
-void setFans()
-{
+void setFans() {
   digitalWrite(FAN_PIN, fanState);
 }
 
-void setStatusLed()
-{
+void setStatusLed() {
   // TODO
 }
 
-void actuate()
-{
+void actuate() {
   setFans();
   setPumps();
   setLights();
   setStatusLed();
 }
 
-void setState()
-{
+void setState() {
   // TODO get time of day from server or show red light
   // if night turn all off and return
-  if (false)
-  {
+  if (currentHour < morningCuttOff || currentHour > nightCuttOff) {
     pumpsState = false;
     lightsState = false;
     fanState = false;
@@ -191,8 +166,7 @@ void setState()
 
   fanState = true;
 
-  if (moisture.output < moistureCutOff)
-  {
+  if (moisture.output < moistureCutOff) {
     pumpsState = true;
     setPumps();
 
@@ -202,13 +176,11 @@ void setState()
     setPumps();
   }
 
-  if (lux.output < lowLightCutOff)
-  {
+  if (lux.output < lowLightCutOff) {
     lightsState = true;
   }
 
-  if (lux.output > highLightCutOff)
-  {
+  if (lux.output > highLightCutOff) {
     lightsState = false;
   }
 }
