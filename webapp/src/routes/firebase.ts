@@ -48,12 +48,12 @@ export function generateChartData(data: PlantData[]) {
 
 	let chartList = [];
 
-	chartList.push(new ChartData(lightDataset, 'Light 💡'));
-	chartList.push(new ChartData(moisture1Dataset, 'Moisture 💧'));
-	chartList.push(new ChartData(humidityDataset, 'Humidity 💦'));
-	chartList.push(new ChartData(tempDataset, 'Temperature 🌡️'));
-	chartList.push(new ChartData(vocsDataset, 'VOCs 🌫️'));
-	chartList.push(new ChartData(co2Dataset, 'CO2 ☁️'));
+	chartList.push(new ChartData(lightDataset, 'Light 💡', "on/off", { min: -1, max: 2 }));
+	chartList.push(new ChartData(moisture1Dataset, 'Moisture 💧', "%", { min: 10, max: 25 }));
+	chartList.push(new ChartData(humidityDataset, 'Humidity 💦', "%", { min: 0, max: 60 }));
+	chartList.push(new ChartData(tempDataset, 'Temperature 🌡️', "°C", { min: 10, max: 40 }));
+	chartList.push(new ChartData(vocsDataset, 'VOCs 🌫️', "PPM", { min: -10, max: 1200 }));
+	chartList.push(new ChartData(co2Dataset, 'CO2 ☁️', "PPM", { min: 400, max: 2500 }));
 
 	chartList[1].appendDataSet(moisture2Dataset);
 	chartList[1].appendDataSet(moisture3Dataset);

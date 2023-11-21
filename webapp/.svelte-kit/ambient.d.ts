@@ -27,18 +27,21 @@
  */
 declare module '$env/static/private' {
 	export const GJS_DEBUG_TOPICS: string;
+	export const npm_package_dev: string;
 	export const USER: string;
 	export const npm_config_user_agent: string;
 	export const XDG_SESSION_TYPE: string;
 	export const BUN_INSTALL: string;
 	export const GIT_ASKPASS: string;
 	export const npm_node_execpath: string;
+	export const npm_package_resolved: string;
 	export const SHLVL: string;
 	export const npm_config_noproxy: string;
 	export const HOME: string;
 	export const OLDPWD: string;
 	export const CHROME_DESKTOP: string;
 	export const LESS: string;
+	export const npm_package_optional: string;
 	export const DESKTOP_SESSION: string;
 	export const NVM_BIN: string;
 	export const TERM_PROGRAM_VERSION: string;
@@ -47,6 +50,7 @@ declare module '$env/static/private' {
 	export const ZSH: string;
 	export const LSCOLORS: string;
 	export const NVM_INC: string;
+	export const npm_package_engines_node: string;
 	export const GTK_MODULES: string;
 	export const GNOME_SHELL_SESSION_MODE: string;
 	export const PAGER: string;
@@ -55,6 +59,7 @@ declare module '$env/static/private' {
 	export const VSCODE_GIT_ASKPASS_NODE: string;
 	export const npm_config_userconfig: string;
 	export const npm_config_local_prefix: string;
+	export const npm_package_integrity: string;
 	export const SYSTEMD_EXEC_PID: string;
 	export const DBUS_SESSION_BUS_ADDRESS: string;
 	export const npm_config_engine_strict: string;
@@ -85,6 +90,7 @@ declare module '$env/static/private' {
 	export const GNOME_SETUP_DISPLAY: string;
 	export const GDK_BACKEND: string;
 	export const DISPLAY: string;
+	export const npm_config_legacy_peer_deps: string;
 	export const LANG: string;
 	export const XDG_CURRENT_DESKTOP: string;
 	export const VSCODE_INJECTION: string;
@@ -103,12 +109,13 @@ declare module '$env/static/private' {
 	export const npm_lifecycle_event: string;
 	export const QT_ACCESSIBILITY: string;
 	export const GDMSESSION: string;
-	export const NO_AT_BRIDGE: string;
+	export const npm_package_dev_optional: string;
 	export const GJS_DEBUG_OUTPUT: string;
 	export const QT_IM_MODULE: string;
 	export const VSCODE_GIT_ASKPASS_EXTRA_ARGS: string;
 	export const npm_config_globalconfig: string;
 	export const npm_config_init_module: string;
+	export const npm_package_peer: string;
 	export const PWD: string;
 	export const npm_execpath: string;
 	export const XDG_DATA_DIRS: string;
@@ -118,7 +125,6 @@ declare module '$env/static/private' {
 	export const npm_command: string;
 	export const INIT_CWD: string;
 	export const EDITOR: string;
-	export const NODE_ENV: string;
 }
 
 /**
@@ -149,18 +155,21 @@ declare module '$env/static/public' {
 declare module '$env/dynamic/private' {
 	export const env: {
 		GJS_DEBUG_TOPICS: string;
+		npm_package_dev: string;
 		USER: string;
 		npm_config_user_agent: string;
 		XDG_SESSION_TYPE: string;
 		BUN_INSTALL: string;
 		GIT_ASKPASS: string;
 		npm_node_execpath: string;
+		npm_package_resolved: string;
 		SHLVL: string;
 		npm_config_noproxy: string;
 		HOME: string;
 		OLDPWD: string;
 		CHROME_DESKTOP: string;
 		LESS: string;
+		npm_package_optional: string;
 		DESKTOP_SESSION: string;
 		NVM_BIN: string;
 		TERM_PROGRAM_VERSION: string;
@@ -169,6 +178,7 @@ declare module '$env/dynamic/private' {
 		ZSH: string;
 		LSCOLORS: string;
 		NVM_INC: string;
+		npm_package_engines_node: string;
 		GTK_MODULES: string;
 		GNOME_SHELL_SESSION_MODE: string;
 		PAGER: string;
@@ -177,6 +187,7 @@ declare module '$env/dynamic/private' {
 		VSCODE_GIT_ASKPASS_NODE: string;
 		npm_config_userconfig: string;
 		npm_config_local_prefix: string;
+		npm_package_integrity: string;
 		SYSTEMD_EXEC_PID: string;
 		DBUS_SESSION_BUS_ADDRESS: string;
 		npm_config_engine_strict: string;
@@ -207,6 +218,7 @@ declare module '$env/dynamic/private' {
 		GNOME_SETUP_DISPLAY: string;
 		GDK_BACKEND: string;
 		DISPLAY: string;
+		npm_config_legacy_peer_deps: string;
 		LANG: string;
 		XDG_CURRENT_DESKTOP: string;
 		VSCODE_INJECTION: string;
@@ -225,12 +237,13 @@ declare module '$env/dynamic/private' {
 		npm_lifecycle_event: string;
 		QT_ACCESSIBILITY: string;
 		GDMSESSION: string;
-		NO_AT_BRIDGE: string;
+		npm_package_dev_optional: string;
 		GJS_DEBUG_OUTPUT: string;
 		QT_IM_MODULE: string;
 		VSCODE_GIT_ASKPASS_EXTRA_ARGS: string;
 		npm_config_globalconfig: string;
 		npm_config_init_module: string;
+		npm_package_peer: string;
 		PWD: string;
 		npm_execpath: string;
 		XDG_DATA_DIRS: string;
@@ -240,7 +253,6 @@ declare module '$env/dynamic/private' {
 		npm_command: string;
 		INIT_CWD: string;
 		EDITOR: string;
-		NODE_ENV: string;
 		[key: `PUBLIC_${string}`]: undefined;
 		[key: `${string}`]: string | undefined;
 	}
