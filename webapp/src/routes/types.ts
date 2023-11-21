@@ -1,3 +1,5 @@
+import type { Point } from "chart.js";
+
 export type PlantData = {
 	co2: number;
 	light: number;
@@ -11,49 +13,33 @@ export type PlantData = {
 };
 
 export class DataSet {
-	field: string;
-	borderColor: string;
-	pointBorderColor: string;
-	data: number[];
-	labels: string[];
-
-	lineTension: number;
-	pointBorderWidth: number;
-	pointRadius: number;
-	pointHitRadius: number;
+	color: string;
+	data: Point[];
+	label: string;
 
 	constructor(plantData: PlantData[], field: keyof PlantData, colour: string) {
-		this.field = field;
-		this.borderColor = colour;
-		this.pointBorderColor = colour;
-
-		this.lineTension = 0.5;
-		this.pointBorderWidth = 6;
-		this.pointRadius = 0;
-		this.pointHitRadius = 5;
-
+		this.color = colour;
 		this.data = [];
-		this.labels = [];
+		this.label = field;
 
 		plantData.forEach((item) => {
-			this.data.push(item[field]);
-			let label = new Date(item.timeStamp).toUTCString();
-			label = label.substring(5, 11) + label.substring(16, 22);
-			this.labels.push(label);
+			const dataPoint: Point = { x: item.timeStamp, y: item[field] };
+			this.data.push(dataPoint);
 		});
 	}
 }
 
 export class ChartData {
 	title: string;
-	labels: string[];
 	datasets: DataSet[];
+	unit: string;
+	range: { min: number, max: number };
 
-	constructor(data: DataSet, title: string) {
+	constructor(data: DataSet, title: string, unit: string, range?: { min: number, max: number }) {
 		this.title = title;
 		this.datasets = [data];
-
-		this.labels = data.labels;
+		this.unit = unit;
+		this.range = range || { min: -10, max: 110 };
 	}
 
 	appendDataSet(data: DataSet) {
