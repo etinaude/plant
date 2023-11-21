@@ -18,7 +18,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const db = getDatabase(app);
 
-export async function populateFakeData() {
+export async function populateTestData() {
 	for (let i = 0; i < 10; i++) {
 		const time = Math.round(Math.random() * 100000000000 + 1600000000000);
 

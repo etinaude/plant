@@ -38,7 +38,7 @@ export class DataSet {
 		plantData.forEach((item) => {
 			this.data.push(item[field]);
 			let label = new Date(item.timeStamp).toUTCString();
-			label = label.substring(5, label.length - 4);
+			label = label.substring(5, 11) + label.substring(16, 22);
 			this.labels.push(label);
 		});
 	}

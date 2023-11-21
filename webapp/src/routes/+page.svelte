@@ -8,7 +8,6 @@
 		Chart as ChartJS,
 		Title,
 		Tooltip,
-		Legend,
 		LineElement,
 		LinearScale,
 		PointElement,
@@ -24,8 +23,10 @@
 	let filter: DataFilter = {
 		startDate: '2020-01-01',
 		endDate: '2023-12-12',
-		dataPointCount: 100
+		dataPointCount: 50
 	};
+
+	let selected: any;
 
 	let lastUpdated = new Date();
 
@@ -70,12 +71,15 @@
 			processFirebaseData(snapshot);
 		});
 
-		const today = new Date().toISOString().slice(0, 10);
-		filter.startDate = today;
+		const today = new Date();
+		today.setDate(today.getDate() - 1);
+		filter.startDate = today.toISOString().slice(0, 16);
 
 		const tomorrow = new Date();
 		tomorrow.setDate(tomorrow.getDate() + 1);
-		filter.endDate = tomorrow.toISOString().slice(0, 10);
+		filter.endDate = tomorrow.toISOString().slice(0, 16);
+
+		getFirebaseData();
 	});
 </script>
 
@@ -84,20 +88,22 @@
 	<meta name="description" content="Plant Dashboard" />
 </svelte:head>
 
+<h1>🌱 Plant Dashboard 🪴</h1>
+
 <div class="filter-row">
 	<div class="filter">
 		<div class="filter-title">Start Date</div>
-		<input type="date" bind:value={filter.startDate} />
+		<input type="datetime-local" bind:value={filter.startDate} on:change={filterAndDisplay} />
 	</div>
 
 	<div class="filter">
 		<div class="filter-title">End Date</div>
-		<input type="date" bind:value={filter.endDate} />
+		<input type="datetime-local" bind:value={filter.endDate} on:change={filterAndDisplay} />
 	</div>
 
 	<div class="filter">
 		<div class="filter-title">Data points</div>
-		<input type="number" bind:value={filter.dataPointCount} />
+		<input type="number" bind:value={filter.dataPointCount} on:change={filterAndDisplay} />
 	</div>
 
 	<div class="filter">
@@ -105,8 +111,6 @@
 		<button on:click={filterAndDisplay}> GO >> </button>
 	</div>
 </div>
-
-<h1>🌱 Plant Dashboard 🪴</h1>
 
 <div class="grid">
 	{#each chartList as chart}
