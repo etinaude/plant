@@ -90,7 +90,6 @@ declare module '$env/static/private' {
 	export const GNOME_SETUP_DISPLAY: string;
 	export const GDK_BACKEND: string;
 	export const DISPLAY: string;
-	export const npm_config_legacy_peer_deps: string;
 	export const LANG: string;
 	export const XDG_CURRENT_DESKTOP: string;
 	export const VSCODE_INJECTION: string;
@@ -218,7 +217,6 @@ declare module '$env/dynamic/private' {
 		GNOME_SETUP_DISPLAY: string;
 		GDK_BACKEND: string;
 		DISPLAY: string;
-		npm_config_legacy_peer_deps: string;
 		LANG: string;
 		XDG_CURRENT_DESKTOP: string;
 		VSCODE_INJECTION: string;

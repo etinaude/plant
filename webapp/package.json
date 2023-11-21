@@ -30,8 +30,7 @@
 		"@sveltejs/adapter-netlify": "^2.0.8",
 		"chart.js": "^4.4.0",
 		"chartjs-adapter-date-fns": "^3.0.0",
-		"dayjs": "^1.11.10",
-		"firebase": "10.6.0",
-		"svelte-chartjs": "^3.1.2"
+		"date-fns": "^2.30.0",
+		"firebase": "10.6.0"
 	}
 }
