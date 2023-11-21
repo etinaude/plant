@@ -7,7 +7,7 @@ const int nightCuttOff = 20;
 const float lowLightCutOff = 0.2;
 const float highLightCutOff = 0.9;
 const float moistureCutOff = 12;
-const bool verbose = false;
+const bool verbose = true;
 
 const float smoothingFactor = 0.7;
 

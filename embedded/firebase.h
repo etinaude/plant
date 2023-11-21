@@ -16,14 +16,13 @@ void timeSetup() {
   const int daylightOffset_sec = 3600;
 
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-  // getLocalTime();
+  if (verbose) Serial.println("Time setup");
 }
 
 long getTime() {
-
   struct tm timeinfo;
   if (!getLocalTime(&timeinfo)) {
-    if(verbose) Serial.println("Failed to obtain time");
+    if (verbose) Serial.println("Failed to obtain time");
     return (lastUnixTime * 1000) + (millis() - lastUnixTimeOffset);
   }
 
@@ -35,17 +34,23 @@ long getTime() {
   strftime(timeHour, 3, "%H", &timeinfo);
   currentHour = atoi(timeHour);
 
-  if(verbose) Serial.println("got time");
+  if (verbose) Serial.print("time   ");
+  if (verbose) Serial.println(lastUnixTime);
+
   return lastUnixTime;
 }
 
 void writeToFirebase() {
+  if (verbose) Serial.println("Writing to firebase...");
+
   long currentTime = getTime();
 
   if (WiFi.status() != WL_CONNECTED) {
-    if(verbose) Serial.println("WIFI not connected");
+    if (verbose) Serial.println("WIFI not connected");
     storeTempData();
     return;
+  } else {
+    if (verbose) Serial.println("connected");
   }
 
   String baseUrl = "esp32/" + String(currentTime);
@@ -62,7 +67,7 @@ void writeToFirebase() {
   firebase.setFloat(baseUrl + "/timeStamp", currentTime);
   firebase.setFloat(baseUrl + "/vocs", tvoc.output);
 
-  if(verbose) Serial.println("Writing to Firebase...");
+  if (verbose) Serial.println("Write Complete");
 }
 
 void connectWifi() {

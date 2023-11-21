@@ -15,6 +15,7 @@ void setup() {
   delay(500);
 
   connectWifi();
+  timeSetup();
 }
 
 void loop() {
@@ -23,7 +24,7 @@ void loop() {
   actuate();
 
   if (verbose) printData();
-  if (verbose) printState();
+  // if (verbose) printState();
 
   delay(readDelay);
 
@@ -77,10 +78,7 @@ void readCCS() {
 }
 
 void printData() {
-  Serial.print("Data:");
-  Serial.print("\t count: ");
-  Serial.print(count);
-
+  Serial.print("DATA");
   Serial.print("\t LDR: ");
   Serial.print(lux.output);
 
