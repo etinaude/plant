@@ -1,4 +1,6 @@
 import { initializeApp } from 'firebase/app';
+import { getAnalytics } from 'firebase/analytics';
+
 import { getDatabase, ref, set } from 'firebase/database';
 import * as keys from './../keys.json';
 import type { PlantData, DataFilter } from './types';
@@ -17,6 +19,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 export const db = getDatabase(app);
+getAnalytics(app);
 
 export async function populateTestData() {
 	for (let i = 0; i < 10; i++) {
