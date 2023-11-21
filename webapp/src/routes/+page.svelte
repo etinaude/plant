@@ -1,45 +1,22 @@
 <script lang="ts">
 	import './styles.scss';
-	import { Line } from 'svelte-chartjs';
 	import { db, generateChartData, filterData } from './firebase.ts';
 	import type { ChartData, DataFilter, PlantData } from './types.ts';
-
-	import {
-		Chart as ChartJS,
-		Title,
-		Tooltip,
-		LineElement,
-		LinearScale,
-		PointElement,
-		CategoryScale
-	} from 'chart.js';
-
+	import Graph from './graph.svelte';
 	import { ref, onValue, DataSnapshot, get } from 'firebase/database';
 	import { onMount } from 'svelte';
 
 	let chartList: ChartData[] = [];
 	let rawData: PlantData[] = [];
 	let filteredData: PlantData[] = [];
+	let lastUpdated = new Date();
+
 	let filter: DataFilter = {
 		startDate: '2020-01-01',
 		endDate: '2023-12-12',
 		dataPointCount: 50
 	};
 
-	let selected: any;
-
-	let lastUpdated = new Date();
-
-	ChartJS.register(Title, Tooltip, LineElement, LinearScale, PointElement, CategoryScale);
-
-	const options = {
-		responsive: true,
-		title: {
-			display: true,
-			text: 'Plant Data'
-		},
-		datasets: {}
-	};
 
 	async function getFirebaseData() {
 		onValue(ref(db, 'esp32'), (snapshot) => {
@@ -81,6 +58,10 @@
 
 		getFirebaseData();
 	});
+
+
+
+
 </script>
 
 <svelte:head>
@@ -112,11 +93,16 @@
 	</div>
 </div>
 
-<div class="grid">
-	{#each chartList as chart}
-		<div class="grid-item">
-			<h2>{chart.title}</h2>
-			<Line data={chart} {options} />
-		</div>
+<div class="chart-list">
+	{#each chartList as data}
+		<Graph dataIn={data} />
 	{/each}
 </div>
+
+<footer>
+	<h2>
+		Check out some of my other projects:
+
+		<a href="https://etinaude.dev">https://etinaude.dev</a>
+	</h2>
+</footer>
