@@ -49,6 +49,6 @@ export class ChartData {
 
 export type DataFilter = {
 	startDate: string;
-	endDate: string;
+	timeSpan: number;
 	dataPointCount: number;
 };

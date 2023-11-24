@@ -66,15 +66,15 @@ export function generateChartData(data: PlantData[]) {
 
 export function filterData(rawData: PlantData[], filter: DataFilter): PlantData[] {
 	let data: PlantData[] = [];
-	const startDate = filter.startDate;
-	const endDate = filter.endDate;
+	const startDate = new Date(filter.startDate).getTime();
+	const endDate = startDate + (1000 * filter.timeSpan);
 	const dataPointCount = filter.dataPointCount;
 
 	// Filter data by date
 	rawData.forEach((item) => {
 		if (!item.timeStamp) return;
-		if (item.timeStamp < new Date(startDate).getTime()) return;
-		if (item.timeStamp > new Date(endDate).getTime()) return;
+		if (item.timeStamp < startDate) return;
+		if (item.timeStamp > endDate) return;
 
 		data.push(item);
 	});

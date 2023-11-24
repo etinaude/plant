@@ -63,14 +63,16 @@ h1 {
 	}
 
 	input,
-	button {
+	button,
+	select {
 		width: 200px;
-		height: 35px;
+		height: 40px;
 		border-radius: 5px;
 		outline: none;
 		border: 2px solid #777;
 		margin: 0 50px;
 		text-align: center;
+		background-color: #fff;
 	}
 
 	button {

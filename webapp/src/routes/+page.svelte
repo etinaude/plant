@@ -13,10 +13,9 @@
 
 	let filter: DataFilter = {
 		startDate: '2020-01-01',
-		endDate: '2023-12-12',
+		timeSpan: 86400, // 1 day default scale
 		dataPointCount: 50
 	};
-
 
 	async function getFirebaseData() {
 		onValue(ref(db, 'esp32'), (snapshot) => {
@@ -52,16 +51,9 @@
 		today.setDate(today.getDate() - 1);
 		filter.startDate = today.toISOString().slice(0, 16);
 
-		const tomorrow = new Date();
-		tomorrow.setDate(tomorrow.getDate() + 1);
-		filter.endDate = tomorrow.toISOString().slice(0, 16);
-
 		getFirebaseData();
+		initAnalytics();
 	});
-
-
-
-
 </script>
 
 <svelte:head>
@@ -78,8 +70,18 @@
 	</div>
 
 	<div class="filter">
-		<div class="filter-title">End Date</div>
-		<input type="datetime-local" bind:value={filter.endDate} on:change={filterAndDisplay} />
+		<div class="filter-title">Time Scale</div>
+		<select bind:value={filter.timeSpan} on:change={filterAndDisplay}>
+			<option value={1800}>Half hour</option>
+			<option value={3600}>1 hour</option>
+			<option value={36000}>10 hours</option>
+			<option value={86400}>1 day</option>
+			<option value={604800}>1 week</option>
+			<option value={2592000}>1 month</option>
+			<option value={7776000}>3 months</option>
+			<option value={15552000}>6 months</option>
+			<option value={31536000}>1 year</option>
+		</select>
 	</div>
 
 	<div class="filter">
