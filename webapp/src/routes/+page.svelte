@@ -12,7 +12,7 @@
 	let lastUpdated = new Date();
 
 	let filter: DataFilter = {
-		startDate: '2020-01-01',
+		endDate: '2020-01-01',
 		timeSpan: 86400, // 1 day default scale
 		dataPointCount: 50
 	};
@@ -52,9 +52,10 @@
 			processFirebaseData(snapshot);
 		});
 
+		// set time for 5 min in the future
 		const today = new Date();
-		today.setDate(today.getDate() - 1);
-		filter.startDate = today.toISOString().slice(0, 16);
+		today.setTime(today.getTime() + 1000 * 60 * 5);
+		filter.endDate = today.toISOString().slice(0, 16);
 
 		getFirebaseData();
 		initAnalytics();
@@ -70,8 +71,8 @@
 
 <div class="filter-row">
 	<div class="filter">
-		<div class="filter-title">Start Date</div>
-		<input type="datetime-local" bind:value={filter.startDate} on:change={filterAndDisplay} />
+		<div class="filter-title">End Date</div>
+		<input type="datetime-local" bind:value={filter.endDate} on:change={filterAndDisplay} />
 	</div>
 
 	<div class="filter">
