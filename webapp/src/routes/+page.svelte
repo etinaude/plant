@@ -1,6 +1,6 @@
 <script lang="ts">
 	import './styles.scss';
-	import { db, generateChartData, filterData } from './firebase.ts';
+	import { db, generateChartData, filterData, initAnalytics } from './firebase.ts';
 	import type { ChartData, DataFilter, PlantData } from './types.ts';
 	import Graph from './graph.svelte';
 	import { ref, onValue, DataSnapshot, get } from 'firebase/database';
@@ -38,8 +38,13 @@
 	}
 
 	function filterAndDisplay() {
-		filteredData = filterData(rawData, filter);
-		chartList = generateChartData(filteredData);
+		chartList = [];
+
+		// force a re-render
+		setTimeout(() => {
+			filteredData = filterData(rawData, filter);
+			chartList = generateChartData(filteredData);
+		}, 10);
 	}
 
 	onMount(async () => {

@@ -8,20 +8,24 @@
 	let ctx: HTMLCanvasElement;
 	let chart: Chart;
 
-	onMount(() => {
-		const dataSets = dataIn.datasets.map((dataSet) => {
-			return {
-				label: dataSet.label,
-				data: dataSet.data,
-				backgroundColor: dataSet.color,
-				borderColor: dataSet.color,
-				pointBorderWidth: 6,
-				pointHitRadius: 6,
-				pointRadius: 0,
-				tension: 0.4
-			};
-		});
+	const dataSets = dataIn.datasets.map((dataSet) => {
+		return {
+			label: dataSet.label,
+			data: dataSet.data,
+			backgroundColor: dataSet.color,
+			borderColor: dataSet.color,
+			pointBorderWidth: 6,
+			pointHitRadius: 6,
+			pointRadius: 0,
+			tension: 0.4
+		};
+	});
 
+	onMount(() => {
+		updateChart();
+	});
+
+	export function updateChart() {
 		chart = new Chart(ctx, {
 			type: 'line',
 			data: {
@@ -59,11 +63,7 @@
 				}
 			}
 		});
-	});
-
-	onDestroy(() => {
-		chart.destroy();
-	});
+	}
 </script>
 
 <div class="grid-item">
