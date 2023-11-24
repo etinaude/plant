@@ -19,7 +19,10 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 export const db = getDatabase(app);
-getAnalytics(app);
+
+export async function initAnalytics() {
+	getAnalytics(app);
+}
 
 export async function populateTestData() {
 	for (let i = 0; i < 10; i++) {
