@@ -1,5 +1,4 @@
-
-#include "firebase.h"
+#include "imports.h"
 
 DHT22 dht22(DHT11_PIN);
 CCS_811 ccs811;
@@ -13,9 +12,6 @@ void setup() {
   if (verbose) Serial.println("~~~ START ~~~");
 
   delay(500);
-
-  connectWifi();
-  timeSetup();
 }
 
 void loop() {
@@ -24,7 +20,7 @@ void loop() {
   actuate();
 
   if (verbose) printData();
-  // if (verbose) printState();
+  if (verbose) printState();
 
   delay(readDelay);
 
@@ -32,7 +28,6 @@ void loop() {
   // send data
   if (millis() - lastSent < sendDelay) return;
   lastSent = millis();
-  writeToFirebase();
 }
 
 void readAllData() {
@@ -122,7 +117,6 @@ void setLights() {
 }
 
 void setPumps() {
-
   if (pumpsState == true) {
     digitalWrite(PUMP_1_PIN, pumpsState);
     digitalWrite(PUMP_2_PIN, pumpsState);
@@ -155,14 +149,10 @@ void actuate() {
 void setState() {
   // TODO get time of day from server or show red light
   // if night turn all off and return
-  if (currentHour < morningCuttOff || currentHour > nightCuttOff) {
-    pumpsState = false;
-    lightsState = false;
-    fanState = false;
-    return;
-  }
 
-  fanState = true;
+  Serial.println("SETSTATE");
+
+  fanState = false;
 
   if (moisture.output < moistureCutOff) {
     pumpsState = true;

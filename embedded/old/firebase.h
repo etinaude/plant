@@ -1,6 +1,6 @@
 #include "imports.h"
 
-Firebase firebase(REFERENCE_URL);
+// Firebase firebase(REFERENCE_URL);
 
 long lastUnixTime = 0;
 long lastUnixTimeOffset = millis();
@@ -41,33 +41,7 @@ long getTime() {
 }
 
 void writeToFirebase() {
-  if (verbose) Serial.println("Writing to firebase...");
-
-  long currentTime = getTime();
-
-  if (WiFi.status() != WL_CONNECTED) {
-    if (verbose) Serial.println("WIFI not connected");
-    storeTempData();
-    return;
-  } else {
-    if (verbose) Serial.println("connected");
-  }
-
-  String baseUrl = "esp32/" + String(currentTime);
-
-  // Examples of setting String, integer and float values.
-  firebase.setFloat(baseUrl + "/co2", co2.output);
-  firebase.setFloat(baseUrl + "/humidity", humid.output);
-  firebase.setFloat(baseUrl + "/light", lux.output);
-  firebase.setFloat(baseUrl + "/moisture1", moisture.output);
-  firebase.setFloat(baseUrl + "/moisture2", moisture.output + 0.2);
-  firebase.setFloat(baseUrl + "/moisture3", moisture.output + 0.4);
-
-  firebase.setFloat(baseUrl + "/temperature", temp.output);
-  firebase.setFloat(baseUrl + "/timeStamp", currentTime);
-  firebase.setFloat(baseUrl + "/vocs", tvoc.output);
-
-  if (verbose) Serial.println("Write Complete");
+//  TODO
 }
 
 void connectWifi() {

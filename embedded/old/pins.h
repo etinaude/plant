@@ -6,17 +6,17 @@
 #define I2C_SDA 18
 #define I2C_SCL 33
 
-#define SOIL_1_PIN 16
-#define SOIL_2_PIN 23
-#define SOIL_3_PIN 23
+#define SOIL_1_PIN 1
+#define SOIL_2_PIN 3
+#define SOIL_3_PIN 2
 
 // ~~~ OUTPUT PINS ~~~
-#define PUMP_1_PIN 5
-#define PUMP_2_PIN 3
-#define PUMP_3_PIN 24
+#define PUMP_1_PIN 34
+#define PUMP_2_PIN 18
+#define PUMP_3_PIN 21
 
-#define FAN_PIN 24
-#define LED_PIN 11
+#define FAN_PIN 16
+#define LED_PIN 17
 #define STATUS_LED_PIN 24
 // ~~~ ~~~ ~~~ ~~~
 
@@ -29,7 +29,7 @@ void setupPins() {
   pinMode(SOIL_1_PIN, INPUT);
   pinMode(SOIL_2_PIN, INPUT);
   pinMode(SOIL_3_PIN, INPUT);
-  adcAttachPin(SOIL_1_PIN);
+  // adcAttachPin(SOIL_1_PIN);
 
 
   pinMode(PUMP_1_PIN, OUTPUT);
