@@ -19,12 +19,15 @@ void setup()
 
   delay(500);
 
-  // connectWifi();
+  connectWifi();
+  firebaseSetup();
   // timeSetup();
 }
 
 void loop()
 {
+  sendFirebaseData();
+  return; // remove to actually do stuff
   readAllData(state);
   state.set(moisture, lux);
   actuate(state);

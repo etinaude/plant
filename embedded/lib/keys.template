@@ -1,0 +1,11 @@
+#include <FirebaseESP32.h>
+
+#define SSID "WIFI_AP"
+#define PASSWORD "WIFI_PASSWORD"
+
+#define API_KEY "API_KEY"
+
+#define DATABASE_URL "<databaseName>.firebaseio.com or <databaseName>.<region>.firebasedatabase.app"
+
+#define USER_EMAIL "USER_EMAIL"
+#define USER_PASSWORD "USER_PASSWORD"
