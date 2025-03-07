@@ -1,12 +1,12 @@
 #include <Arduino.h>
-#include <Ewma.h>
+#include "rollingAve.h"
 
 const float lowLightCutOff = 0.2;
 const float highLightCutOff = 0.9;
 const float moistureCutOff = 12;
 const int morningCutOff = 10; // 10 am
 const int nightCutOff = 20;   // 8 pm
-const float smoothingFactor = 0.7;
+const float windowSize = 20;
 
 class PlantState
 {
@@ -20,12 +20,12 @@ public:
     long lastUnixTime;
     long lastUnixTimeOffset;
 
-    Ewma co2 = Ewma(smoothingFactor);
-    Ewma lux = Ewma(smoothingFactor);
-    Ewma moisture = Ewma(smoothingFactor);
-    Ewma tvoc = Ewma(smoothingFactor);
-    Ewma temp = Ewma(smoothingFactor);
-    Ewma humid = Ewma(smoothingFactor);
+    long co2;
+    long lux;
+    long moisture;
+    long tvoc;
+    long temp;
+    long humid;
 
     PlantState()
     {
@@ -37,11 +37,13 @@ public:
         currentHour = 0;
         lastUnixTime = 0;
         lastUnixTimeOffset = 0;
+
+        Serial.println("Plant State Initialized");
     }
 
     void printOutputs()
     {
-        Serial.print("~~~State~~~");
+        Serial.println("~~~State~~~");
 
         Serial.print("Pumps: ");
         Serial.println(pumps);
@@ -52,7 +54,7 @@ public:
         Serial.print("Lights: ");
         Serial.println(lights);
 
-        Serial.print("\t Fan - ");
+        Serial.print("Fan - ");
         Serial.println(fan);
         Serial.print("~~~~~~~~~\n");
     }
@@ -61,49 +63,23 @@ public:
     {
         Serial.println("~~~DATA~~~");
         Serial.print("LDR: ");
-        Serial.println(lux.output);
+        Serial.println(lux);
 
         Serial.print("Moisture: ");
-        Serial.println(moisture.output);
+        Serial.println(moisture);
 
         Serial.print("CO2: ");
-        Serial.println(co2.output);
+        Serial.println(co2);
 
         Serial.print("tVOC - ");
-        Serial.println(tvoc.output);
+        Serial.println(tvoc);
 
         Serial.print("temp - ");
-        Serial.println(temp.output);
+        Serial.println(temp);
 
         Serial.print("humidity - ");
-        Serial.println(humid.output);
+        Serial.println(humid);
 
         Serial.print("~~~~~~~~~~\n");
-    }
-
-    void set(Ewma moisture, Ewma lux)
-    {
-        // TODO get time of day from server or show red light
-        // if night turn all off and return
-        if (currentHour < morningCutOff || currentHour > nightCutOff)
-        {
-            pumps = false;
-            lights = false;
-            fan = false;
-            return;
-        }
-
-        pumps = moisture.output < moistureCutOff;
-        fan = true;
-
-        if (lux.output < lowLightCutOff)
-        {
-            lights = true;
-        }
-
-        if (lux.output > highLightCutOff)
-        {
-            lights = false;
-        }
     }
 };

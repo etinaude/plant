@@ -9,6 +9,16 @@
         "unordered_set": "cpp",
         "vector": "cpp",
         "string_view": "cpp",
-        "initializer_list": "cpp"
+        "initializer_list": "cpp",
+        "cmath": "cpp",
+        "utility": "cpp",
+        "optional": "cpp",
+        "functional": "cpp",
+        "random": "cpp",
+        "fstream": "cpp",
+        "istream": "cpp",
+        "ostream": "cpp",
+        "sstream": "cpp",
+        "streambuf": "cpp"
     }
 }

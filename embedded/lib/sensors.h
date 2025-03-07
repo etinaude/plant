@@ -15,13 +15,14 @@ float readTempHumData(PlantState state)
     sensors_event_t event;
     dht.temperature().getEvent(&event);
     float tempRaw = event.temperature;
+    if (!isnan(tempRaw))
+        state.temp = tempRaw;
     delay(50);
 
     dht.humidity().getEvent(&event);
     float humidityRaw = event.relative_humidity;
-
-    state.temp.filter(tempRaw);
-    state.humid.filter(humidityRaw);
+    if (!isnan(humidityRaw))
+        state.humid = humidityRaw;
 
     return tempRaw;
 }
@@ -33,7 +34,7 @@ float readLightData(PlantState state)
 
     float luxRaw = (LDR1 + LDR2) / 2;
 
-    state.lux.filter((LDR1 + LDR2) / 2);
+    state.lux = luxRaw;
 
     return luxRaw;
 }
@@ -44,7 +45,7 @@ int readMoistureData(PlantState state)
     // convert to %
     float processed = (7500 - rawMoisture) / 46;
 
-    state.moisture.filter(processed);
+    state.moisture = processed;
 
     return rawMoisture;
 }
@@ -61,8 +62,8 @@ int readCCS(PlantState state)
     float co2Raw = ccs.geteCO2();
     float tvocRaw = ccs.getTVOC();
 
-    state.co2.filter(co2Raw);
-    state.tvoc.filter(tvocRaw);
+    state.co2 = co2Raw;
+    state.tvoc = tvocRaw;
 
     return co2Raw;
 }
