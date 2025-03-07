@@ -1,20 +1,27 @@
 #include <WiFi.h>
+#include <WiFiClientSecure.h>
+#include <FirebaseClient.h>
+
 #include "time.h"
 #include "keys.h"
-
-#include <addons/TokenHelper.h>
-#include <addons/RTDBHelper.h>
 
 long lastUnixTime = 0;
 long lastUnixTimeOffset = millis();
 long currentHour = 0;
 
-FirebaseData fbdo;
-FirebaseAuth auth;
-FirebaseConfig config;
-unsigned long sendDataPrevMillis = 0;
+void asyncCB(AsyncResult &aResult);
+void processData(AsyncResult &aResult);
 
-unsigned long count = 0;
+UserAuth user_auth(API_KEY, USER_EMAIL, USER_PASSWORD);
+FirebaseApp app;
+WiFiClientSecure ssl_client1;
+using AsyncClient = AsyncClientClass;
+AsyncClient async_client(ssl_client1);
+
+RealtimeDatabase Database;
+
+bool onetimeTest = false;
+AsyncResult dbResult;
 
 void storeTempData()
 {
@@ -32,7 +39,7 @@ void timeSetup(bool verbose)
     Serial.println("Time setup");
 }
 
-long getTime(bool verbose)
+long getTime(bool verbose = false)
 {
   struct tm timeinfo;
   if (!getLocalTime(&timeinfo))
@@ -56,11 +63,6 @@ long getTime(bool verbose)
     Serial.println(lastUnixTime);
 
   return lastUnixTime;
-}
-
-void writeToFirebase()
-{
-  //  TODO
 }
 
 void connectWifi()
@@ -89,47 +91,75 @@ void connectWifi()
 
 void firebaseSetup()
 {
-  Serial.print("FIREBASE START");
+  ssl_client1.setInsecure();
 
-  config.api_key = API_KEY;
-  auth.user.email = USER_EMAIL;
-  auth.user.password = USER_PASSWORD;
-  config.database_url = DATABASE_URL;
-  config.token_status_callback = tokenStatusCallback;
-  fbdo.setBSSLBufferSize(4096, 1024);
-  Firebase.reconnectNetwork(true);
-  fbdo.setResponseSize(4096);
-  Firebase.begin(&config, &auth);
+  initializeApp(async_client, app, getAuth(user_auth), processData, "🔐 authTask");
 
-  Serial.print("FIREBASE SETUP");
+  app.getApp<RealtimeDatabase>(Database);
+
+  Database.url(DATABASE_URL);
 }
 
-void sendFirebaseData()
+bool sendData(String path, double data, bool verbose = false)
 {
-  //  TODO
-  Serial.print("HERE");
-  if (Firebase.ready() && (millis() - sendDataPrevMillis > 15000 || sendDataPrevMillis == 0))
+  if (verbose)
   {
-    sendDataPrevMillis = millis();
-    Serial.printf("Set bool... %s\n", Firebase.setBool(fbdo, F("/test/bool"), count % 2 == 0) ? "ok" : fbdo.errorReason().c_str());
-    Serial.printf("Get bool... %s\n", Firebase.getBool(fbdo, FPSTR("/test/bool")) ? fbdo.to<bool>() ? "true" : "false" : fbdo.errorReason().c_str());
-    bool bVal;
-    Serial.printf("Get bool ref... %s\n", Firebase.getBool(fbdo, F("/test/bool"), &bVal) ? bVal ? "true" : "false" : fbdo.errorReason().c_str());
-    Serial.printf("Set int... %s\n", Firebase.setInt(fbdo, F("/test/int"), count) ? "ok" : fbdo.errorReason().c_str());
-    Serial.printf("Get int... %s\n", Firebase.getInt(fbdo, F("/test/int")) ? String(fbdo.to<int>()).c_str() : fbdo.errorReason().c_str());
-    int iVal = 0;
-    Serial.printf("Get int ref... %s\n", Firebase.getInt(fbdo, F("/test/int"), &iVal) ? String(iVal).c_str() : fbdo.errorReason().c_str());
-    Serial.printf("Set float... %s\n", Firebase.setFloat(fbdo, F("/test/float"), count + 10.2) ? "ok" : fbdo.errorReason().c_str());
-    Serial.printf("Get float... %s\n", Firebase.getFloat(fbdo, F("/test/float")) ? String(fbdo.to<float>()).c_str() : fbdo.errorReason().c_str());
-    Serial.printf("Set double... %s\n", Firebase.setDouble(fbdo, F("/test/double"), count + 35.517549723765) ? "ok" : fbdo.errorReason().c_str());
-    Serial.printf("Get double... %s\n", Firebase.getDouble(fbdo, F("/test/double")) ? String(fbdo.to<double>()).c_str() : fbdo.errorReason().c_str());
-    Serial.printf("Set string... %s\n", Firebase.setString(fbdo, F("/test/string"), "Hello World!") ? "ok" : fbdo.errorReason().c_str());
-    Serial.printf("Get string... %s\n", Firebase.getString(fbdo, F("/test/string")) ? fbdo.to<const char *>() : fbdo.errorReason().c_str());
-
-    // For the usage of FirebaseJson, see examples/FirebaseJson/BasicUsage/Create_Edit_Parse.ino
-    FirebaseJson json;
-
-    Serial.println();
-    count++;
+    Serial.print("Sending data to: ");
+    Serial.print(path);
+    Serial.print("Data: ");
+    Serial.println(data);
   }
+
+  bool status = Database.set<double>(async_client, path, data);
+  if (!status)
+    Serial.printf("Error, msg: %s, code: %d\n", async_client.lastError().message().c_str(), async_client.lastError().code());
+
+  return status;
+}
+
+bool writeToFirebase(PlantState state, bool verbose = false)
+{
+  app.loop();
+  getTime(false);
+  String path = "/data/" + String(lastUnixTime);
+
+  if (!app.ready())
+  {
+    if (verbose)
+      Serial.println("App not ready");
+    return false;
+  }
+
+  if (!sendData(path + "/co2", state.co2, verbose))
+    return false;
+  if (!sendData(path + "/lux", state.lux, verbose))
+    return false;
+  if (!sendData(path + "/moisture", state.moisture, verbose))
+    return false;
+  if (!sendData(path + "/tvoc", state.tvoc, verbose))
+    return false;
+  if (!sendData(path + "/temp", state.temp, verbose))
+    return false;
+  if (!sendData(path + "/humid", state.humid, verbose))
+    return false;
+
+  return true;
+}
+
+void processData(AsyncResult &aResult)
+{
+  if (!aResult.isResult())
+    return;
+
+  if (aResult.isEvent())
+    Serial.printf("Event task: %s, msg: %s, code: %d\n", aResult.uid().c_str(), aResult.eventLog().message().c_str(), aResult.eventLog().code());
+
+  if (aResult.isDebug())
+    Serial.printf("Debug task: %s, msg: %s\n", aResult.uid().c_str(), aResult.debug().c_str());
+
+  if (aResult.isError())
+    Serial.printf("Error task: %s, msg: %s, code: %d\n", aResult.uid().c_str(), aResult.error().message().c_str(), aResult.error().code());
+
+  if (aResult.available())
+    Serial.printf("task: %s, payload: %s\n", aResult.uid().c_str(), aResult.c_str());
 }
