@@ -5,31 +5,12 @@
 
 #include <DHT.h>
 #include <DHT_U.h>
-#include <Ewma.h>
-
-#define LDR_1_PIN 37
-#define DHT_PIN 39
-
-#define I2C_SDA 18
-#define I2C_SCL 33
-
-#define SOIL_1_PIN 16
-#define SOIL_2_PIN 23
-#define SOIL_3_PIN 23
+#include "pins.h"
 
 DHT_Unified dht(DHT_PIN, DHT22);
 Adafruit_CCS811 ccs;
 
-const float smoothingFactor = 0.7;
-
-Ewma co2(smoothingFactor);
-Ewma tvoc(smoothingFactor);
-Ewma moisture(smoothingFactor);
-Ewma lux(smoothingFactor);
-Ewma temp(smoothingFactor);
-Ewma humid(smoothingFactor);
-
-void readTempHumData()
+float readTempHumData(PlantState state)
 {
     sensors_event_t event;
     dht.temperature().getEvent(&event);
@@ -39,30 +20,40 @@ void readTempHumData()
     dht.humidity().getEvent(&event);
     float humidityRaw = event.relative_humidity;
 
-    temp.filter(tempRaw);
-    humid.filter(humidityRaw);
+    state.temp.filter(tempRaw);
+    state.humid.filter(humidityRaw);
+
+    return tempRaw;
 }
 
-int readLightData(PlantState state)
+float readLightData(PlantState state)
 {
-    lux.filter(state.LDR);
-    return !digitalRead(LDR_1_PIN);
+    int LDR1 = analogRead(LDR_1_PIN);
+    int LDR2 = analogRead(LDR_2_PIN);
+
+    float luxRaw = (LDR1 + LDR2) / 2;
+
+    state.lux.filter((LDR1 + LDR2) / 2);
+
+    return luxRaw;
 }
 
-void readMoistureData()
+int readMoistureData(PlantState state)
 {
     float rawMoisture = analogRead(SOIL_1_PIN);
     // convert to %
     float processed = (7500 - rawMoisture) / 46;
 
-    moisture.filter(processed);
+    state.moisture.filter(processed);
+
+    return rawMoisture;
 }
 
-void readCCS()
+int readCCS(PlantState state)
 {
     if (!ccs.available())
     {
-        return;
+        return -1;
     }
     float temp = ccs.calculateTemperature();
     ccs.setTempOffset(temp - 25.0);
@@ -70,14 +61,17 @@ void readCCS()
     float co2Raw = ccs.geteCO2();
     float tvocRaw = ccs.getTVOC();
 
-    co2.filter(co2Raw);
-    tvoc.filter(tvocRaw);
+    state.co2.filter(co2Raw);
+    state.tvoc.filter(tvocRaw);
+
+    return co2Raw;
 }
 
 void setupSensors()
 {
-
     pinMode(LDR_1_PIN, INPUT);
+    pinMode(LDR_2_PIN, INPUT);
+
     pinMode(DHT_PIN, INPUT);
     pinMode(SOIL_1_PIN, INPUT);
     pinMode(SOIL_2_PIN, INPUT);
@@ -85,36 +79,30 @@ void setupSensors()
 
     dht.begin();
     ccs.begin();
-    pinMode(LDR_1_PIN, INPUT);
-    pinMode(SOIL_1_PIN, INPUT);
 }
 
-void readAllData(PlantState state)
+void readAllData(PlantState state, bool verbose = false)
 {
-    readCCS();
-    readTempHumData();
-    readMoistureData();
-    readLightData(state);
-}
+    int rawCCS = readCCS(state);
+    float rawHumid = readTempHumData(state);
+    int rawMoist = readMoistureData(state);
+    float rawLux = readLightData(state);
 
-void printData()
-{
-    Serial.print("DATA");
-    Serial.print("\t LDR: ");
-    Serial.print(lux.output);
+    if (verbose)
+    {
+        Serial.println("~~~ RAW ~~~");
 
-    Serial.print("\t Moisture: ");
-    Serial.print(moisture.output);
+        Serial.print("CCS: ");
+        Serial.println(rawCCS);
+        Serial.print("Temp: ");
+        Serial.println(rawHumid);
+        Serial.print("Humid: ");
+        Serial.println(rawHumid);
+        Serial.print("Moist: ");
+        Serial.println(rawMoist);
+        Serial.print("Lux: ");
+        Serial.println(rawLux);
 
-    Serial.print("\t CO2: ");
-    Serial.print(co2.output);
-
-    Serial.print("\t tVOC - ");
-    Serial.print(tvoc.output);
-
-    Serial.print("\t temp - ");
-    Serial.print(temp.output);
-
-    Serial.print("\t humidity - ");
-    Serial.println(humid.output);
+        Serial.println("~~~~~~~~~\n");
+    }
 }

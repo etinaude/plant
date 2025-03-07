@@ -6,6 +6,7 @@ const float highLightCutOff = 0.9;
 const float moistureCutOff = 12;
 const int morningCutOff = 10; // 10 am
 const int nightCutOff = 20;   // 8 pm
+const float smoothingFactor = 0.7;
 
 class PlantState
 {
@@ -19,6 +20,13 @@ public:
     long lastUnixTime;
     long lastUnixTimeOffset;
 
+    Ewma co2 = Ewma(smoothingFactor);
+    Ewma lux = Ewma(smoothingFactor);
+    Ewma moisture = Ewma(smoothingFactor);
+    Ewma tvoc = Ewma(smoothingFactor);
+    Ewma temp = Ewma(smoothingFactor);
+    Ewma humid = Ewma(smoothingFactor);
+
     PlantState()
     {
         pumps = false;
@@ -31,24 +39,46 @@ public:
         lastUnixTimeOffset = 0;
     }
 
-    void print()
+    void printOutputs()
     {
-        Serial.print("State");
+        Serial.print("~~~State~~~");
 
-        Serial.print("\t Pumps: ");
-        Serial.print(pumps);
+        Serial.print("Pumps: ");
+        Serial.println(pumps);
 
-        Serial.print("\t Status: ");
-        Serial.print(statusLED);
+        Serial.print("Status: ");
+        Serial.println(statusLED);
 
-        Serial.print("\t Lights: ");
-        Serial.print(lights);
-
-        Serial.print("\t LDR - ");
-        Serial.print(LDR);
+        Serial.print("Lights: ");
+        Serial.println(lights);
 
         Serial.print("\t Fan - ");
         Serial.println(fan);
+        Serial.print("~~~~~~~~~\n");
+    }
+
+    void printData()
+    {
+        Serial.println("~~~DATA~~~");
+        Serial.print("LDR: ");
+        Serial.println(lux.output);
+
+        Serial.print("Moisture: ");
+        Serial.println(moisture.output);
+
+        Serial.print("CO2: ");
+        Serial.println(co2.output);
+
+        Serial.print("tVOC - ");
+        Serial.println(tvoc.output);
+
+        Serial.print("temp - ");
+        Serial.println(temp.output);
+
+        Serial.print("humidity - ");
+        Serial.println(humid.output);
+
+        Serial.print("~~~~~~~~~~\n");
     }
 
     void set(Ewma moisture, Ewma lux)

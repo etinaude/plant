@@ -4,43 +4,49 @@
 
 int lastSent = millis();
 PlantState state;
-const bool verbose = true;
+
+const bool VERBOSE = true;
+const bool ENABLE_WIFI = false;
 
 const int sendDelay = 1000 * 60;
 const int readDelay = 1000 * 1;
 
 void setup()
 {
-  setupSensors();
-
   Serial.begin(115200);
-  if (verbose)
-    Serial.println("~~~ START ~~~");
+  setupSensors();
+  setupOutputs();
 
-  delay(500);
+  Serial.println("~~~ START ~~~");
 
-  connectWifi();
-  firebaseSetup();
-  // timeSetup();
+  if (ENABLE_WIFI)
+  {
+    connectWifi();
+    firebaseSetup();
+    timeSetup(ENABLE_WIFI);
+  }
 }
 
 void loop()
 {
-  sendFirebaseData();
-  return; // remove to actually do stuff
-  readAllData(state);
-  state.set(moisture, lux);
-  actuate(state);
 
-  if (verbose)
-    state.print();
-  // if (verbose) printState();
+  readAllData(state, VERBOSE);
+
+  if (VERBOSE)
+  {
+    state.printData();
+    state.printOutputs();
+  }
 
   delay(readDelay);
+
+  return; // remove to actually do stuff
+  actuate(state);
 
   // send data
   if (millis() - lastSent < sendDelay)
     return;
+
   lastSent = millis();
   // writeToFirebase();
 }
