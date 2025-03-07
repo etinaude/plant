@@ -31,7 +31,7 @@ This is a project to keep my plants from dying! It uses a range of sensors to wa
 
 ## ⚡ Electronics
 
-### [Easy EDA Schematic]([https://easyeda.com/editor#id=12a974c2c440434495f13cfdb8ba623a](https://oshwlab.com/etinaude/plant))
+### [Easy EDA Schematic](https://easyeda.com/editor#id=12a974c2c440434495f13cfdb8ba623a)
 
 ### 🔋 Components
 
