@@ -33,12 +33,16 @@ void setStatusLed(bool state)
     digitalWrite(STATUS_LED_PIN, state);
 }
 
-void actuate(PlantState state)
+void actuate(PlantState &state, bool verbose = false)
 {
+    if (verbose)
+        Serial.println("Actuating");
     setLights(state.lights);
     setPumps(state.pumps);
     setFans(state.fan);
     setStatusLed(state.statusLED);
+    if (verbose)
+        Serial.println("Done actuating");
 }
 
 void blinkStatus()

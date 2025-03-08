@@ -10,47 +10,47 @@
 DHT_Unified dht(DHT_PIN, DHT22);
 Adafruit_CCS811 ccs;
 
-float readTempHumData(PlantState state)
+float readTempHumData(PlantState &state)
 {
     sensors_event_t event;
     dht.temperature().getEvent(&event);
     float tempRaw = event.temperature;
     if (!isnan(tempRaw))
-        state.temp = tempRaw;
+        state.temp.reading(tempRaw);
     delay(50);
 
     dht.humidity().getEvent(&event);
     float humidityRaw = event.relative_humidity;
     if (!isnan(humidityRaw))
-        state.humid = humidityRaw;
+        state.humid.reading(humidityRaw);
 
     return tempRaw;
 }
 
-float readLightData(PlantState state)
+float readLightData(PlantState &state)
 {
     int LDR1 = analogRead(LDR_1_PIN);
     int LDR2 = analogRead(LDR_2_PIN);
 
     float luxRaw = (LDR1 + LDR2) / 2;
 
-    state.lux = luxRaw;
+    state.lux.reading(luxRaw);
 
     return luxRaw;
 }
 
-int readMoistureData(PlantState state)
+int readMoistureData(PlantState &state)
 {
     float rawMoisture = analogRead(SOIL_1_PIN);
     // convert to %
     float processed = (7500 - rawMoisture) / 46;
 
-    state.moisture = processed;
+    state.moisture.reading(processed);
 
     return rawMoisture;
 }
 
-int readCCS(PlantState state)
+int readCCS(PlantState &state)
 {
     if (!ccs.available())
     {
@@ -62,8 +62,8 @@ int readCCS(PlantState state)
     float co2Raw = ccs.geteCO2();
     float tvocRaw = ccs.getTVOC();
 
-    state.co2 = co2Raw;
-    state.tvoc = tvocRaw;
+    state.co2.reading(co2Raw);
+    state.tvoc.reading(tvocRaw);
 
     return co2Raw;
 }
@@ -82,7 +82,7 @@ void setupSensors()
     ccs.begin();
 }
 
-void readAllData(PlantState state, bool verbose = false)
+void readAllData(PlantState &state, bool verbose = false)
 {
     int rawCCS = readCCS(state);
     float rawHumid = readTempHumData(state);

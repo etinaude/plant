@@ -8,6 +8,8 @@
 long lastUnixTime = 0;
 long lastUnixTimeOffset = millis();
 long currentHour = 0;
+int lastSent = millis();
+const int sendDelay = 30;
 
 void asyncCB(AsyncResult &aResult);
 void processData(AsyncResult &aResult);
@@ -76,8 +78,8 @@ void connectWifi()
     Serial.print(".");
     delay(100);
 
-    // after 20 seconds dont connect
-    if (millis() - startTime > 2 * 1000)
+    // after 10 seconds dont connect
+    if (millis() - startTime > 10 * 1000)
     {
       Serial.println("Failed to connect to WiFi");
       return;
@@ -117,7 +119,7 @@ bool sendData(String path, double data, bool verbose = false)
   return status;
 }
 
-bool writeToFirebase(PlantState state, bool verbose = false)
+bool writeToFirebase(PlantState &state, bool verbose = false)
 {
   app.loop();
   getTime(false);
@@ -130,17 +132,17 @@ bool writeToFirebase(PlantState state, bool verbose = false)
     return false;
   }
 
-  if (!sendData(path + "/co2", state.co2, verbose))
+  if (!sendData(path + "/co2", state.co2.getAvg(), verbose))
     return false;
-  if (!sendData(path + "/lux", state.lux, verbose))
+  if (!sendData(path + "/lux", state.lux.getAvg(), verbose))
     return false;
-  if (!sendData(path + "/moisture", state.moisture, verbose))
+  if (!sendData(path + "/moisture", state.moisture.getAvg(), verbose))
     return false;
-  if (!sendData(path + "/tvoc", state.tvoc, verbose))
+  if (!sendData(path + "/tvoc", state.tvoc.getAvg(), verbose))
     return false;
-  if (!sendData(path + "/temp", state.temp, verbose))
+  if (!sendData(path + "/temp", state.temp.getAvg(), verbose))
     return false;
-  if (!sendData(path + "/humid", state.humid, verbose))
+  if (!sendData(path + "/humid", state.humid.getAvg(), verbose))
     return false;
 
   return true;
@@ -162,4 +164,20 @@ void processData(AsyncResult &aResult)
 
   if (aResult.available())
     Serial.printf("task: %s, payload: %s\n", aResult.uid().c_str(), aResult.c_str());
+}
+
+void interWebsLoop(PlantState &state, bool verbose = false)
+{
+  int currentTime = getTime(verbose);
+
+  if (currentTime - lastSent < sendDelay)
+    return;
+
+  bool writeSuccess = writeToFirebase(state, verbose);
+
+  Serial.write("Write Success: ");
+  Serial.println(writeSuccess);
+
+  if (writeSuccess)
+    lastSent = currentTime;
 }

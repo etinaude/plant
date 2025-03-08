@@ -11,33 +11,24 @@ const float windowSize = 20;
 class PlantState
 {
 public:
-    bool pumps;
-    bool statusLED;
-    bool lights;
-    bool fan;
-    bool LDR;
-    int currentHour;
-    long lastUnixTime;
-    long lastUnixTimeOffset;
+    bool pumps = false;
+    bool statusLED = false;
+    bool lights = false;
+    bool fan = false;
+    bool LDR = false;
+    int currentHour = 0;
+    long lastUnixTime = 0;
+    long lastUnixTimeOffset = 0;
 
-    long co2;
-    long lux;
-    long moisture;
-    long tvoc;
-    long temp;
-    long humid;
+    RollingAve co2 = RollingAve();
+    RollingAve lux = RollingAve();
+    RollingAve moisture = RollingAve();
+    RollingAve tvoc = RollingAve();
+    RollingAve temp = RollingAve();
+    RollingAve humid = RollingAve();
 
     PlantState()
     {
-        pumps = false;
-        statusLED = false;
-        lights = false;
-        fan = false;
-        LDR = false;
-        currentHour = 0;
-        lastUnixTime = 0;
-        lastUnixTimeOffset = 0;
-
         Serial.println("Plant State Initialized");
     }
 
@@ -63,22 +54,22 @@ public:
     {
         Serial.println("~~~DATA~~~");
         Serial.print("LDR: ");
-        Serial.println(lux);
+        Serial.println(lux.getAvg());
 
         Serial.print("Moisture: ");
-        Serial.println(moisture);
+        Serial.println(moisture.getAvg());
 
         Serial.print("CO2: ");
-        Serial.println(co2);
+        Serial.println(co2.getAvg());
 
         Serial.print("tVOC - ");
-        Serial.println(tvoc);
+        Serial.println(tvoc.getAvg());
 
         Serial.print("temp - ");
-        Serial.println(temp);
+        Serial.println(temp.getAvg());
 
         Serial.print("humidity - ");
-        Serial.println(humid);
+        Serial.println(humid.getAvg());
 
         Serial.print("~~~~~~~~~~\n");
     }

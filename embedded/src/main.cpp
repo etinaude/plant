@@ -1,16 +1,14 @@
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
-#include "./../lib/actuate.h"
-#include "./../lib/sensors.h"
-#include "./../lib/interwebs.h"
+#include "actuate.h"
+#include "sensors.h"
+#include "interwebs.h"
 
-int lastSent = millis();
 PlantState state = PlantState();
 
 const bool VERBOSE = true;
-const bool ENABLE_WIFI = false;
+const bool ENABLE_WIFI = true;
 
-const int sendDelay = 30;
 const int readDelay = 1000 * 1;
 
 void setup()
@@ -41,26 +39,11 @@ void loop()
   }
 
   readAllData(state, VERBOSE);
-  actuate(state);
+  actuate(state, VERBOSE);
 
   if (!ENABLE_WIFI)
     return;
 
-  int currentTime = getTime();
-
-  Serial.print("state.lux.output");
-  Serial.println(state.lux);
-
   // send data
-  if (currentTime - lastSent > sendDelay)
-  {
-
-    bool writeSuccess = writeToFirebase(state, VERBOSE);
-
-    Serial.write("Write Success: ");
-    Serial.println(writeSuccess);
-
-    if (writeSuccess)
-      lastSent = currentTime;
-  }
+  interWebsLoop(state, VERBOSE);
 }
