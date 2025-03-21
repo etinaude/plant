@@ -3,8 +3,8 @@
 
 #define DHT_PIN 6
 
-#define I2C_SDA 18
-#define I2C_SCL 33
+#define I2C_SDA 8
+#define I2C_SCL 9
 
 #define SOIL_1_PIN 1
 #define SOIL_2_PIN 3

@@ -136,13 +136,19 @@ bool writeToFirebase(PlantState &state, bool verbose = false)
     return false;
   if (!sendData(path + "/lux", state.lux.getAvg(), verbose))
     return false;
-  if (!sendData(path + "/moisture", state.moisture.getAvg(), verbose))
+  if (!sendData(path + "/moisture1", state.moisture1.getAvg(), verbose))
+    return false;
+  if (!sendData(path + "/moisture2", state.moisture2.getAvg(), verbose))
+    return false;
+  if (!sendData(path + "/moisture3", state.moisture3.getAvg(), verbose))
     return false;
   if (!sendData(path + "/tvoc", state.tvoc.getAvg(), verbose))
     return false;
   if (!sendData(path + "/temp", state.temp.getAvg(), verbose))
     return false;
   if (!sendData(path + "/humid", state.humid.getAvg(), verbose))
+    return false;
+  if (!sendData(path + "/timeStamp", lastUnixTime, verbose))
     return false;
 
   return true;

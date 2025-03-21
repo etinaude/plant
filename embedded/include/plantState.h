@@ -22,7 +22,10 @@ public:
 
     RollingAve co2 = RollingAve();
     RollingAve lux = RollingAve();
-    RollingAve moisture = RollingAve();
+    long moistureAve = 0;
+    RollingAve moisture1 = RollingAve();
+    RollingAve moisture2 = RollingAve();
+    RollingAve moisture3 = RollingAve();
     RollingAve tvoc = RollingAve();
     RollingAve temp = RollingAve();
     RollingAve humid = RollingAve();
@@ -57,7 +60,7 @@ public:
         Serial.println(lux.getAvg());
 
         Serial.print("Moisture: ");
-        Serial.println(moisture.getAvg());
+        Serial.println(moistureAve);
 
         Serial.print("CO2: ");
         Serial.println(co2.getAvg());
