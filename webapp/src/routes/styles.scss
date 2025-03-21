@@ -5,10 +5,9 @@
 		Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 	--font-mono: 'Fira Mono', monospace;
 
-
-	--background: #eee;
-	--accent: #46d84d;
-	--text: #333;
+	--background: #222;
+	--accent: #228128;
+	--text: #eee;
 
 	font-family: var(--font-body);
 	color: var(--text);
@@ -19,41 +18,44 @@ body {
 	background-color: var(--background);
 }
 
-
 h1 {
-	font-size: 40px;
+	// font-size: 40px;
 	text-align: center;
-	margin-bottom: 100px;
+	margin-bottom: 50px;
 	margin-top: 100px;
 	color: var(--text);
-
+	user-select: none;
 
 	@media (max-width: 600px) {
 		font-size: 25px;
 		margin-top: 50px;
 		margin-bottom: 30px;
-
 	}
 }
 
+.container {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+}
+
+.left-column {
+	width: 400px;
+}
 
 .chart-list {
 	display: flex;
 	flex-wrap: wrap;
-	max-width: 1200px;
-	margin: 0 auto;
+	margin: 50px auto;
 	justify-content: center;
-
-	margin-bottom: 200px;
+	width: 1200px;
 }
-
 
 .filter-row {
 	display: flex;
 	justify-content: center;
 	margin-bottom: 50px;
 	flex-wrap: wrap;
-
 
 	.filter-title {
 		text-align: center;
@@ -69,10 +71,11 @@ h1 {
 		height: 40px;
 		border-radius: 5px;
 		outline: none;
-		border: 2px solid #777;
-		margin: 0 50px;
+		border: 2px solid #555;
+		margin: 20px 50px;
 		text-align: center;
-		background-color: #fff;
+		background-color: #444;
+		color: var(--text);
 	}
 
 	button {

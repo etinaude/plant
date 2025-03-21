@@ -1,4 +1,4 @@
-import type { Point } from "chart.js";
+import type { Point } from 'chart.js';
 
 export type PlantData = {
 	co2: number;
@@ -6,9 +6,9 @@ export type PlantData = {
 	moisture1: number;
 	moisture2: number;
 	moisture3: number;
-	humidity: number;
-	temperature: number;
-	vocs: number;
+	humid: number;
+	temp: number;
+	tvoc: number;
 	timeStamp: number;
 };
 
@@ -33,9 +33,9 @@ export class ChartData {
 	title: string;
 	datasets: DataSet[];
 	unit: string;
-	range: { min: number, max: number };
+	range: { min: number; max: number };
 
-	constructor(data: DataSet, title: string, unit: string, range?: { min: number, max: number }) {
+	constructor(data: DataSet, title: string, unit: string, range?: { min: number; max: number }) {
 		this.title = title;
 		this.datasets = [data];
 		this.unit = unit;
@@ -48,7 +48,6 @@ export class ChartData {
 }
 
 export type DataFilter = {
-	endDate: string;
 	timeSpan: number;
 	dataPointCount: number;
 };

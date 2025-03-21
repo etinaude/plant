@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Chart from 'chart.js/auto';
 	import type { ChartData } from './types';
-	import { onDestroy, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import 'chartjs-adapter-date-fns';
 
 	export let dataIn!: ChartData;
@@ -38,9 +38,14 @@
 						display: false
 					}
 				},
+				interaction: {
+					mode: 'index',
+					intersect: false
+				},
 				scales: {
 					x: {
 						type: 'time',
+
 						time: {
 							unit: 'minute',
 							displayFormats: {
@@ -49,6 +54,9 @@
 						},
 						ticks: {
 							maxTicksLimit: 10
+						},
+						grid: {
+							color: '#333'
 						}
 					},
 					y: {
@@ -56,6 +64,9 @@
 						title: {
 							display: true,
 							text: dataIn.unit
+						},
+						grid: {
+							color: '#333'
 						},
 						suggestedMin: dataIn.range.min,
 						suggestedMax: dataIn.range.max
@@ -74,13 +85,15 @@
 
 <style lang="scss">
 	.grid-item {
-		width: min(600px, 90vw);
+		width: min(500px, 90vw);
+		height: 350px;
 
 		h2 {
 			text-align: center;
 			width: 100%;
 			margin-top: 20px;
 			margin-bottom: 10px;
+			user-select: none;
 		}
 	}
 </style>
