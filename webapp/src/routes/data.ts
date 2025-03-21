@@ -28,9 +28,8 @@ export function filterData(filter: DataFilter): PlantData[] {
 		if (item.timeStamp * 1000 < startTimeStamp) return;
 		if (item.timeStamp * 1000 > endTimeStamp) return;
 
-		let temp = { ...item };
-		temp.timeStamp = temp.timeStamp * 1000;
-		data.push(temp);
+		const processed = processData({ ...item });
+		data.push(processed);
 	});
 
 	// if we have too much data, we need to reduce it
@@ -52,6 +51,16 @@ export function filterData(filter: DataFilter): PlantData[] {
 
 	return data;
 }
+
+function processData(data: PlantData) {
+	data.timeStamp = data.timeStamp * 1000;
+	if (data.moisture1 < 0) data.moisture1 = NaN;
+	if (data.moisture2 < 0) data.moisture2 = NaN;
+	if (data.moisture3 < 0) data.moisture3 = NaN;
+
+	return data;
+}
+
 export function generateChartData(data: PlantData[]) {
 	const moisture1Dataset = new DataSet(data, 'moisture1', '#24aaed');
 	const moisture2Dataset = new DataSet(data, 'moisture2', '#247bed');
