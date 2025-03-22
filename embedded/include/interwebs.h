@@ -30,6 +30,27 @@ void storeTempData()
   // TODO
 }
 
+void reconnectWifi()
+{
+  int startTime = millis();
+  Serial.println("\nreconnecting");
+  WiFi.disconnect();
+  WiFi.reconnect();
+
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    Serial.print(".");
+    delay(100);
+
+    // after 10 seconds dont connect
+    if (millis() - startTime > 10 * 1000)
+    {
+      Serial.println("Failed to connect to WiFi");
+      return;
+    }
+  }
+}
+
 void timeSetup(bool verbose)
 {
   const char *ntpServer = "pool.ntp.org";
@@ -48,6 +69,8 @@ long getTime(bool verbose = false)
   {
     if (verbose)
       Serial.println("Failed to obtain time");
+
+    reconnectWifi();
     return (lastUnixTime * 1000) + (millis() - lastUnixTimeOffset);
   }
 
@@ -174,6 +197,9 @@ void processData(AsyncResult &aResult)
 
 void interWebsLoop(PlantState &state, bool verbose = false)
 {
+  if (WiFi.status() != WL_CONNECTED)
+    reconnectWifi();
+
   int currentTime = getTime(verbose);
 
   if (currentTime - lastSent < sendDelay)
