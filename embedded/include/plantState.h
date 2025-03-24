@@ -4,21 +4,22 @@
 const float lowLightCutOff = 0.2;
 const float highLightCutOff = 0.9;
 const float moistureCutOff = 12;
-const int morningCutOff = 10; // 10 am
-const int nightCutOff = 20;   // 8 pm
+const int morningCutOff = 8; // 8 am
+const int nightCutOff = 21;  // 9 pm
 const float windowSize = 20;
 
 class PlantState
 {
 public:
-    bool pumps = false;
+    bool pump1 = false;
+    bool pump2 = false;
+    bool pump3 = false;
+
     bool statusLED = false;
     bool lights = false;
     bool fan = false;
     bool LDR = false;
     int currentHour = 0;
-    long lastUnixTime = 0;
-    long lastUnixTimeOffset = 0;
 
     RollingAve co2 = RollingAve();
     RollingAve lux = RollingAve();
@@ -40,7 +41,9 @@ public:
         Serial.println("~~~State~~~");
 
         Serial.print("Pumps: ");
-        Serial.println(pumps);
+        Serial.println(pump1);
+        Serial.println(pump2);
+        Serial.println(pump3);
 
         Serial.print("Status: ");
         Serial.println(statusLED);

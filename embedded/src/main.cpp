@@ -39,6 +39,7 @@ void loop()
   }
 
   readAllData(state, VERBOSE);
+  setState(state, VERBOSE);
   actuate(state, VERBOSE);
 
   if (!ENABLE_WIFI)

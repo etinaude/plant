@@ -62,7 +62,7 @@ void timeSetup(bool verbose)
     Serial.println("Time setup");
 }
 
-long getTime(bool verbose = false)
+long getTime(PlantState &state, bool verbose = false)
 {
   struct tm timeinfo;
   if (!getLocalTime(&timeinfo))
@@ -78,9 +78,8 @@ long getTime(bool verbose = false)
   // incase of internet loss store the last time
   lastUnixTimeOffset = millis();
 
-  char timeHour[3];
-  strftime(timeHour, 3, "%H", &timeinfo);
-  currentHour = atoi(timeHour);
+  // get the current hour
+  state.currentHour = timeinfo.tm_hour;
 
   if (verbose)
     Serial.print("time   ");
@@ -145,7 +144,6 @@ bool sendData(String path, double data, bool verbose = false)
 bool writeToFirebase(PlantState &state, bool verbose = false)
 {
   app.loop();
-  getTime(false);
   String path = "/data/" + String(lastUnixTime);
 
   if (!app.ready())
@@ -200,7 +198,7 @@ void interWebsLoop(PlantState &state, bool verbose = false)
   if (WiFi.status() != WL_CONNECTED)
     reconnectWifi();
 
-  int currentTime = getTime(verbose);
+  int currentTime = getTime(state, verbose);
 
   if (currentTime - lastSent < sendDelay)
     return;
